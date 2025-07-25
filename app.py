@@ -70,8 +70,24 @@ def convite():
 @app.route('/lista_presentes')
 def lista_presentes():
     """Página com a lista de presentes"""
-    presentes = Presente.query.filter_by(disponivel=True).all()
-    return render_template('lista_presentes.html', presentes=presentes)
+    try:
+        # Tentar criar as tabelas primeiro
+        db.create_all()
+        
+        # Verificar se a tabela existe e tem dados
+        presentes = Presente.query.filter_by(disponivel=True).all()
+        
+        # Se não há presentes, inicializar dados de exemplo
+        if len(presentes) == 0:
+            init_db()
+            presentes = Presente.query.filter_by(disponivel=True).all()
+            
+        app.logger.info(f"Encontrados {len(presentes)} presentes disponíveis")
+        return render_template('lista_presentes.html', presentes=presentes)
+    except Exception as e:
+        app.logger.error(f"Erro na lista de presentes: {str(e)}")
+        # Se der erro, retornar lista vazia mas não quebrar a página
+        return render_template('lista_presentes.html', presentes=[])
 
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
