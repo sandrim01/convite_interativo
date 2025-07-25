@@ -23,10 +23,16 @@
 
     <div class="presentes-grid">
         {% for presente in presentes %}
-        <div class="presente-card" data-categoria="{{ presente.categoria }}">
+        <div class="presente-card" data-categoria="{{ presente.categoria }}" id="presente-{{ presente.id }}">
             <div class="presente-header">
                 <h3>{{ presente.nome }}</h3>
                 <span class="categoria-tag">{{ presente.categoria }}</span>
+                {% if presente.selecionado_por %}
+                <div class="status-selecionado">
+                    <i class="fas fa-check-circle"></i>
+                    Escolhido por {{ presente.selecionado_por }}
+                </div>
+                {% endif %}
             </div>
             
             <div class="presente-body">
@@ -37,6 +43,12 @@
             </div>
             
             <div class="presente-footer">
+                {% if not presente.selecionado_por %}
+                <button class="btn-selecionar" onclick="selecionarPresente({{ presente.id }})">
+                    <i class="fas fa-heart"></i>
+                    Quero Presentear
+                </button>
+                {% endif %}
                 <a href="{{ presente.link_amazon }}" target="_blank" class="btn-amazon">
                     <i class="fab fa-amazon"></i>
                     Ver na Amazon
@@ -84,6 +96,47 @@ function filtrarCategoria(categoria) {
         } else {
             card.style.display = 'none';
         }
+    });
+}
+
+function selecionarPresente(presenteId) {
+    // Pedir o nome do convidado
+    const nomeConvidado = prompt('Por favor, digite seu nome para confirmar a seleção:');
+    
+    if (!nomeConvidado || nomeConvidado.trim() === '') {
+        alert('Nome é obrigatório para selecionar um presente.');
+        return;
+    }
+    
+    // Confirmar seleção
+    if (!confirm(`Confirma que ${nomeConvidado.trim()} deseja presentear este item?`)) {
+        return;
+    }
+    
+    // Fazer requisição para selecionar o presente
+    fetch('/selecionar_presente', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            presente_id: presenteId,
+            nome_convidado: nomeConvidado.trim()
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            // Recarregar a página para mostrar as mudanças
+            location.reload();
+        } else {
+            alert('Erro: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao selecionar presente. Tente novamente.');
     });
 }
 

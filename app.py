@@ -44,6 +44,9 @@ class Presente(db.Model):
     categoria = db.Column(db.String(100))
     disponivel = db.Column(db.Boolean, default=True)
     data_criacao = db.Column(db.DateTime, default=datetime.utcnow)
+    # Campos para controle de seleção
+    selecionado_por = db.Column(db.String(200))  # Nome do convidado que selecionou
+    data_selecao = db.Column(db.DateTime)        # Quando foi selecionado
     
     def __repr__(self):
         return f'<Presente {self.nome}>'
@@ -89,6 +92,35 @@ def lista_presentes():
         # Se der erro, retornar lista vazia mas não quebrar a página
         return render_template('lista_presentes.html', presentes=[])
 
+@app.route('/selecionar_presente', methods=['POST'])
+def selecionar_presente():
+    """Rota para selecionar um presente"""
+    try:
+        data = request.get_json()
+        presente_id = data.get('presente_id')
+        nome_convidado = data.get('nome_convidado')
+        
+        if not presente_id or not nome_convidado:
+            return jsonify({'success': False, 'message': 'Dados incompletos'})
+        
+        presente = Presente.query.get(presente_id)
+        if not presente:
+            return jsonify({'success': False, 'message': 'Presente não encontrado'})
+        
+        if presente.selecionado_por:
+            return jsonify({'success': False, 'message': 'Este presente já foi selecionado por outro convidado'})
+        
+        # Marcar presente como selecionado
+        presente.selecionado_por = nome_convidado
+        presente.data_selecao = datetime.utcnow()
+        db.session.commit()
+        
+        return jsonify({'success': True, 'message': f'Presente selecionado com sucesso por {nome_convidado}!'})
+        
+    except Exception as e:
+        app.logger.error(f"Erro ao selecionar presente: {str(e)}")
+        return jsonify({'success': False, 'message': 'Erro interno do servidor'})
+
 # Rota alternativa para contornar problemas de cache
 @app.route('/presentes')
 def presentes():
@@ -133,7 +165,11 @@ def admin():
     """Página administrativa para gerenciar presentes"""
     presentes = Presente.query.all()
     confirmacoes = Confirmacao.query.all()
-    return render_template('admin.html', presentes=presentes, confirmacoes=confirmacoes)
+    presentes_selecionados = Presente.query.filter(Presente.selecionado_por.isnot(None)).all()
+    return render_template('admin.html', 
+                         presentes=presentes, 
+                         confirmacoes=confirmacoes,
+                         presentes_selecionados=presentes_selecionados)
 
 @app.route('/api/confirmar-presenca', methods=['POST'])
 def confirmar_presenca():
