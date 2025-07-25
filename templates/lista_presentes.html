@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Presentes - Casamento Alessandro & [Nome da Noiva]{% endblock %}
+
+{% block content %}
+<div class="lista-presentes-container">
+    <div class="header-presentes">
+        <h1><i class="fas fa-gift"></i> Lista de Presentes</h1>
+        <p class="subtitulo">Alessandro & [Nome da Noiva]</p>
+        <p class="descricao">
+            Sua presença é o presente mais importante para nós! Mas se desejar nos presentear, 
+            aqui estão algumas sugestões especiais que escolhemos com carinho.
+        </p>
+    </div>
+
+    <div class="filtros-presentes">
+        <button class="filtro-btn active" onclick="filtrarCategoria('todas')">Todas</button>
+        <button class="filtro-btn" onclick="filtrarCategoria('Cozinha')">Cozinha</button>
+        <button class="filtro-btn" onclick="filtrarCategoria('Mesa e Bar')">Mesa e Bar</button>
+        <button class="filtro-btn" onclick="filtrarCategoria('Eletrodomésticos')">Eletrodomésticos</button>
+        <button class="filtro-btn" onclick="filtrarCategoria('Casa')">Casa</button>
+    </div>
+
+    <div class="presentes-grid">
+        {% for presente in presentes %}
+        <div class="presente-card" data-categoria="{{ presente.categoria }}">
+            <div class="presente-header">
+                <h3>{{ presente.nome }}</h3>
+                <span class="categoria-tag">{{ presente.categoria }}</span>
+            </div>
+            
+            <div class="presente-body">
+                <p class="descricao">{{ presente.descricao }}</p>
+                {% if presente.preco %}
+                <p class="preco">R$ {{ "%.2f"|format(presente.preco) }}</p>
+                {% endif %}
+            </div>
+            
+            <div class="presente-footer">
+                <a href="{{ presente.link_amazon }}" target="_blank" class="btn-amazon">
+                    <i class="fab fa-amazon"></i>
+                    Ver na Amazon
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="footer-presentes">
+        <div class="mensagem-agradecimento">
+            <h3>💕 Obrigado!</h3>
+            <p>
+                Lembramos que sua presença em nosso casamento é o que realmente importa. 
+                Os presentes são apenas uma forma carinhosa de começarmos nossa nova vida juntos.
+            </p>
+        </div>
+        
+        <div class="acoes-footer">
+            <a href="{{ url_for('convite') }}" class="btn-voltar">
+                <i class="fas fa-arrow-left"></i>
+                Voltar ao Convite
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filtrarCategoria(categoria) {
+    const cards = document.querySelectorAll('.presente-card');
+    const botoes = document.querySelectorAll('.filtro-btn');
+    
+    // Remover classe active de todos os botões
+    botoes.forEach(btn => btn.classList.remove('active'));
+    
+    // Adicionar classe active ao botão clicado
+    event.target.classList.add('active');
+    
+    // Filtrar cards
+    cards.forEach(card => {
+        if (categoria === 'todas' || card.dataset.categoria === categoria) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+// Animação suave ao carregar
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.presente-card');
+    cards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+</script>
+{% endblock %}

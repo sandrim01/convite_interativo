@@ -1,0 +1,1128 @@
+/* Reset e configurações base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Convite Interativo */
+.convite-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* Envelope */
+.carta-envelope {
+    width: 400px;
+    height: 300px;
+    background: linear-gradient(145deg, #8B4513, #A0522D, #CD853F);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: envelopePulse 3s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efeito de brilho no envelope */
+.carta-envelope::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    animation: envelopeShine 4s ease-in-out infinite;
+}
+
+@keyframes envelopeShine {
+    0% { transform: rotate(0deg) translate(-50%, -50%); }
+    100% { transform: rotate(360deg) translate(-50%, -50%); }
+}
+
+@keyframes envelopePulse {
+    0%, 100% { 
+        box-shadow: 
+            0 15px 35px rgba(0,0,0,0.3),
+            0 0 0 0 rgba(255, 105, 180, 0.4);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 
+            0 20px 40px rgba(255, 105, 180, 0.5),
+            0 0 30px rgba(255, 105, 180, 0.3),
+            0 0 0 10px rgba(255, 105, 180, 0.1);
+        transform: scale(1.02);
+    }
+}
+
+.carta-envelope:hover {
+    transform: translateY(-10px) scale(1.08) rotateY(5deg);
+    box-shadow: 
+        0 30px 60px rgba(255, 105, 180, 0.6),
+        0 0 50px rgba(255, 105, 180, 0.4),
+        0 0 0 15px rgba(255, 105, 180, 0.2);
+    filter: brightness(1.1);
+    animation: envelopeHoverPulse 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes envelopeHoverPulse {
+    0% { 
+        box-shadow: 
+            0 30px 60px rgba(255, 105, 180, 0.6),
+            0 0 50px rgba(255, 105, 180, 0.4),
+            0 0 0 15px rgba(255, 105, 180, 0.2);
+    }
+    100% { 
+        box-shadow: 
+            0 35px 70px rgba(255, 105, 180, 0.8),
+            0 0 60px rgba(255, 105, 180, 0.6),
+            0 0 0 20px rgba(255, 105, 180, 0.3);
+    }
+}
+
+.envelope-content {
+    text-align: center;
+    color: white;
+    padding: 20px;
+}
+
+.nomes-noivos {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2.2em;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.texto-convite {
+    font-size: 1.1em;
+    margin-bottom: 20px;
+    opacity: 0.9;
+}
+
+/* Carta */
+.carta-content {
+    max-width: 800px;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    overflow: hidden;
+    animation: fadeInUp 0.8s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.carta-header {
+    background: linear-gradient(135deg, #FFB6C1, #FFC0CB);
+    padding: 30px;
+    text-align: center;
+    position: relative;
+}
+
+.ornamento-top {
+    width: 50px;
+    height: 3px;
+    background: #8B4513;
+    margin: 0 auto 20px;
+    border-radius: 2px;
+}
+
+.titulo-casamento {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5em;
+    color: #8B4513;
+    margin-bottom: 10px;
+}
+
+.coracao {
+    font-size: 2em;
+    animation: heartbeat 2s infinite;
+}
+
+.coracao {
+    font-size: 2em;
+    animation: heartbeat 2s infinite;
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Efeito especial para botões importantes - versão simplificada */
+.btn-abrir {
+    background: linear-gradient(135deg, #ffffff, #f8f9fa, #e9ecef);
+    color: #DC143C;
+    border-color: #DC143C;
+}
+
+@keyframes buttonGlow {
+    from {
+        box-shadow: 
+            0 10px 25px rgba(255, 105, 180, 0.5),
+            0 0 0 0 rgba(255, 105, 180, 0.4);
+    }
+    to {
+        box-shadow: 
+            0 15px 35px rgba(255, 105, 180, 0.8), 
+            0 0 30px rgba(255, 105, 180, 0.6),
+            0 0 0 8px rgba(255, 105, 180, 0.2);
+    }
+}
+
+/* Destaque especial para botões de ação crítica - versão simplificada */
+.btn-confirmar {
+    background: linear-gradient(135deg, #ffffff, #f8f9fa, #e9ecef);
+    color: #DC143C;
+    border-color: #DC143C;
+}
+
+@keyframes buttonPulse {
+    0%, 100% { 
+        transform: scale(1);
+        filter: brightness(1);
+    }
+    50% { 
+        transform: scale(1.03);
+        filter: brightness(1.2);
+    }
+}
+
+/* Botões de presentes com cor vermelha padrão */
+.btn-presentes {
+    background: linear-gradient(135deg, #ffffff, #f8f9fa, #e9ecef);
+    color: #DC143C;
+    border-color: #DC143C;
+}
+
+.btn-presentes:hover {
+    background: linear-gradient(135deg, #FF69B4, #FFB6C1, #FFC0CB);
+    color: #DC143C;
+    border-color: #FF69B4;
+}
+
+.carta-body {
+    padding: 40px;
+}
+
+/* Seções do convite */
+.secao-nomes {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.nomes-principais {
+    font-family: 'Dancing Script', cursive;
+    font-size: 3em;
+    color: #8B4513;
+    margin-bottom: 15px;
+}
+
+.subtitulo {
+    font-size: 1.2em;
+    color: #666;
+    font-style: italic;
+}
+
+.info-evento {
+    background: #f8f9fa;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 20px;
+    border-left: 5px solid #FFB6C1;
+}
+
+.info-evento h3 {
+    color: #8B4513;
+    font-size: 1.5em;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.data-info, .local-info {
+    margin-bottom: 20px;
+}
+
+.data {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #333;
+}
+
+.horario, .horario-recepcao {
+    font-size: 1.1em;
+    color: #666;
+}
+
+.nome-local {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #8B4513;
+    margin-bottom: 5px;
+}
+
+.endereco {
+    color: #666;
+    line-height: 1.5;
+}
+
+/* Botões */
+.btn-abrir, .btn-acao, .btn-confirmar, .btn-presentes {
+    background: linear-gradient(135deg, #ffffff, #f8f9fa, #e9ecef);
+    color: #DC143C;
+    border: 2px solid #DC143C;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    margin: 10px;
+    box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+    user-select: none;
+    min-width: 180px;
+    justify-content: center;
+}
+
+/* Animação flutuante sutil */
+@keyframes buttonFloat {
+    0%, 100% { 
+        transform: translateY(0px);
+        box-shadow: 
+            0 10px 25px rgba(255, 105, 180, 0.5),
+            0 0 0 0 rgba(255, 105, 180, 0.4);
+    }
+    50% { 
+        transform: translateY(-3px);
+        box-shadow: 
+            0 15px 30px rgba(255, 105, 180, 0.6),
+            0 0 20px rgba(255, 105, 180, 0.3);
+    }
+}
+
+/* Remoção de bordas animadas para simplicidade */
+
+/* Remoção de indicadores visuais não utilizados */
+
+/* Remoção de efeitos shimmer desnecessários */
+
+/* Efeito hover simples e elegante */
+.btn-abrir:hover, .btn-acao:hover, .btn-confirmar:hover, .btn-presentes:hover {
+    background: linear-gradient(135deg, #FF69B4, #FFB6C1, #FFC0CB);
+    color: #DC143C;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+    border-color: #FF69B4;
+}
+
+/* Remoção de animações de pulso no hover */
+
+.btn-abrir:active, .btn-acao:active, .btn-confirmar:active, .btn-presentes:active {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(220, 20, 60, 0.4);
+}
+
+.acoes-local, .acoes-recepcao, .acoes-confirmacao, .acoes-presentes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-top: 30px;
+    justify-content: center;
+    padding: 25px;
+    background: linear-gradient(
+        135deg, 
+        rgba(255, 182, 193, 0.1), 
+        rgba(255, 105, 180, 0.1),
+        rgba(255, 182, 193, 0.1)
+    );
+    border-radius: 20px;
+    border: 2px solid #FFB6C1;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Remoção de efeitos de brilho desnecessários */
+
+/* Formulário */
+.form-confirmacao {
+    max-width: 500px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input, .form-group select, .form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: #FFB6C1;
+}
+
+.radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+}
+
+.radio-label:hover {
+    background-color: #f0f0f0;
+}
+
+/* Mapa */
+.mapa-container {
+    margin: 20px 0;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* Seção final */
+.info-evento.final {
+    text-align: center;
+    background: linear-gradient(135deg, #FFB6C1, #FFC0CB);
+    color: #8B4513;
+}
+
+.coracao-grande {
+    font-size: 3em;
+    margin-bottom: 20px;
+    animation: heartbeat 2s infinite;
+}
+
+.mensagem-final {
+    font-size: 1.2em;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
+.assinatura {
+    margin: 30px 0;
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.3em;
+}
+
+/* Link discreto para administração */
+.admin-link {
+    display: inline-block;
+    color: #ccc;
+    font-size: 1.2em;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    opacity: 0.3;
+}
+
+.admin-link:hover {
+    color: #8B4513;
+    opacity: 1;
+    transform: rotate(360deg);
+}
+
+/* Modal */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: auto;
+    padding: 0;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 400px;
+    position: relative;
+    animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}
+
+.modal-body {
+    padding: 40px 30px;
+    text-align: center;
+}
+
+.modal-icon {
+    font-size: 3em;
+    color: #28a745;
+    margin-bottom: 20px;
+}
+
+.modal-body h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* Lista de Presentes */
+.lista-presentes-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header-presentes {
+    text-align: center;
+    margin-bottom: 40px;
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.header-presentes h1 {
+    font-family: 'Playfair Display', serif;
+    color: #8B4513;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+.header-presentes .subtitulo {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.8em;
+    color: #FFB6C1;
+    margin-bottom: 20px;
+}
+
+.header-presentes .descricao {
+    color: #666;
+    font-size: 1.1em;
+    line-height: 1.6;
+}
+
+/* Filtros */
+.filtros-presentes {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.filtro-btn {
+    background: linear-gradient(135deg, #ffffff, #f8f9fa, #e9ecef);
+    color: #DC143C;
+    border: 2px solid #DC143C;
+    padding: 15px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Animação flutuante para filtros */
+@keyframes filterFloat {
+    0%, 100% { 
+        transform: translateY(0px);
+    }
+    50% { 
+        transform: translateY(-1px);
+    }
+}
+
+/* Efeito shimmer nos filtros */
+.filtro-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 182, 193, 0.3),
+        transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.filtro-btn:hover::before {
+    left: 100%;
+}
+
+.filtro-btn.active, .filtro-btn:hover {
+    background: linear-gradient(135deg, #FF69B4, #FFB6C1, #FFC0CB);
+    color: #DC143C;
+    border-color: #FF69B4;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+}
+
+/* Grid de presentes */
+.presentes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.presente-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.presente-card:hover {
+    transform: translateY(-5px);
+}
+
+.presente-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.presente-header h3 {
+    color: #8B4513;
+    font-size: 1.3em;
+    flex: 1;
+}
+
+.categoria-tag {
+    background: #FFB6C1;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    margin-left: 10px;
+}
+
+.presente-body .descricao {
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.preco {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #28a745;
+    margin-bottom: 15px;
+}
+
+.btn-amazon {
+    background: linear-gradient(135deg, #ffffff, #f8f9fa, #e9ecef);
+    color: #DC143C;
+    text-decoration: none;
+    padding: 18px 30px;
+    border-radius: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 100%;
+    justify-content: center;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border: 2px solid #DC143C;
+    box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Remoção de animação flutuante do Amazon */
+
+/* Remoção de efeito shimmer do Amazon */
+
+.btn-amazon:hover {
+    background: linear-gradient(135deg, #FF69B4, #FFB6C1, #FFC0CB);
+    color: #DC143C;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+    border-color: #FF69B4;
+}
+
+/* Footer presentes */
+.footer-presentes {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.mensagem-agradecimento h3 {
+    color: #8B4513;
+    font-size: 1.8em;
+    margin-bottom: 15px;
+}
+
+.mensagem-agradecimento p {
+    color: #666;
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.btn-voltar {
+    background: linear-gradient(135deg, #ffffff, #f8f9fa, #e9ecef);
+    color: #DC143C;
+    text-decoration: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid #DC143C;
+    box-shadow: 0 4px 12px rgba(220, 20, 60, 0.3);
+}
+
+.btn-voltar:hover {
+    transform: translateY(-3px);
+    background: linear-gradient(135deg, #FF69B4, #FFB6C1, #FFC0CB);
+    color: #DC143C;
+    box-shadow: 0 8px 20px rgba(255, 105, 180, 0.4);
+    border-color: #FF69B4;
+}
+
+/* Admin Panel */
+.admin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.admin-header {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+}
+
+.admin-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.admin-title {
+    flex: 1;
+}
+
+.admin-title h1 {
+    color: #8B4513;
+    font-size: 2.2em;
+    margin-bottom: 10px;
+}
+
+.admin-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.admin-status {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-logout {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 2px solid #dc3545;
+}
+
+.btn-logout:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+    background: linear-gradient(135deg, #c82333, #a71e2a);
+    border-color: #c82333;
+}
+
+.admin-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    background: linear-gradient(135deg, #fff, #f8f9fa);
+    color: #8B4513;
+    border: 3px solid #FFB6C1;
+    padding: 15px 30px;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 10px rgba(255, 182, 193, 0.3);
+}
+
+.tab-btn.active, .tab-btn:hover {
+    background: linear-gradient(135deg, #FF69B4, #FF1493);
+    color: white;
+    border-color: #FF1493;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(255, 105, 180, 0.4);
+}
+
+.tab-content {
+    display: none;
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content h2 {
+    color: #8B4513;
+    margin-bottom: 25px;
+}
+
+/* Tabelas admin */
+.table-container {
+    overflow-x: auto;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.admin-table th, .admin-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.admin-table th {
+    background: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+.status {
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.status.disponivel, .status.confirmado {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status.indisponivel, .status.nao-confirmado {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.btn-acao {
+    background: none;
+    border: none;
+    padding: 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 0 2px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-ver {
+    color: #007bff;
+}
+
+.btn-ver:hover {
+    background: #e3f2fd;
+}
+
+.btn-remover {
+    color: #dc3545;
+}
+
+.btn-remover:hover {
+    background: #f8d7da;
+}
+
+/* Formulário admin */
+.form-admin {
+    max-width: 600px;
+}
+
+.btn-adicionar {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    border: 3px solid #28a745;
+    padding: 15px 30px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 6px 15px rgba(40, 167, 69, 0.4);
+}
+
+.btn-adicionar:hover {
+    transform: translateY(-3px) scale(1.02);
+    background: linear-gradient(135deg, #218838, #1e7e34);
+    box-shadow: 0 8px 20px rgba(40, 167, 69, 0.6);
+    border-color: #218838;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    .carta-envelope {
+        width: 90%;
+        max-width: 350px;
+        height: 250px;
+    }
+    
+    .nomes-noivos {
+        font-size: 1.8em;
+    }
+    
+    .carta-content {
+        margin: 10px;
+    }
+    
+    .carta-body {
+        padding: 20px;
+    }
+    
+    .nomes-principais {
+        font-size: 2.2em;
+    }
+    
+    .titulo-casamento {
+        font-size: 2em;
+    }
+    
+    .acoes-local, .acoes-recepcao, .acoes-confirmacao {
+        flex-direction: column;
+    }
+    
+    .presentes-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .admin-tabs {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .tab-btn {
+        width: 200px;
+        justify-content: center;
+    }
+    
+    .admin-header-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .admin-actions {
+        justify-content: center;
+    }
+}
+
+/* ==================== ANIMAÇÕES AVANÇADAS DE BOTÕES ==================== */
+
+/* Animação de pulso intenso para os botões principais */
+@keyframes pulseIntense {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 20, 147, 0.7);
+        transform: scale(1);
+    }
+    25% {
+        box-shadow: 0 0 0 5px rgba(255, 20, 147, 0.5);
+        transform: scale(1.02);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(255, 20, 147, 0.3);
+        transform: scale(1.05);
+    }
+    75% {
+        box-shadow: 0 0 0 5px rgba(255, 20, 147, 0.5);
+        transform: scale(1.02);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 20, 147, 0);
+        transform: scale(1);
+    }
+}
+
+/* Aplicar pulso aos botões principais - removido para simplicidade */
+
+/* Animação de brilho nos botões */
+@keyframes glowPulse {
+    0%, 100% {
+        box-shadow: 
+            0 0 10px rgba(255, 20, 147, 0.3),
+            0 0 20px rgba(255, 20, 147, 0.2),
+            inset 0 1px 3px rgba(255, 255, 255, 0.3);
+    }
+    50% {
+        box-shadow: 
+            0 0 20px rgba(255, 20, 147, 0.5),
+            0 0 40px rgba(255, 20, 147, 0.3),
+            inset 0 1px 3px rgba(255, 255, 255, 0.5);
+    }
+}
+
+/* Efeito de destaque extra para botões importantes - simplificado */
+.btn-destacado {
+    border: 3px solid #DC143C;
+    box-shadow: 0 6px 15px rgba(220, 20, 60, 0.4);
+}

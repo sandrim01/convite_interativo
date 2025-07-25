@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}Painel Administrativo - Casamento{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <div class="admin-header-content">
+            <div class="admin-title">
+                <h1><i class="fas fa-cog"></i> Painel Administrativo</h1>
+                <p>Gerencie presentes e confirmações de presença</p>
+            </div>
+            <div class="admin-actions">
+                <span class="admin-status">
+                    <i class="fas fa-user-shield"></i>
+                    Logado como Administrador
+                </span>
+                <a href="{{ url_for('admin_logout') }}" class="btn-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Sair
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-tabs">
+        <button class="tab-btn active" onclick="mostrarTab('presentes')">
+            <i class="fas fa-gift"></i> Presentes
+        </button>
+        <button class="tab-btn" onclick="mostrarTab('confirmacoes')">
+            <i class="fas fa-users"></i> Confirmações
+        </button>
+        <button class="tab-btn" onclick="mostrarTab('adicionar')">
+            <i class="fas fa-plus"></i> Adicionar Presente
+        </button>
+    </div>
+
+    <!-- Tab Presentes -->
+    <div id="tab-presentes" class="tab-content active">
+        <h2>Lista de Presentes</h2>
+        <div class="table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Categoria</th>
+                        <th>Preço</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for presente in presentes %}
+                    <tr>
+                        <td>{{ presente.nome }}</td>
+                        <td>{{ presente.categoria }}</td>
+                        <td>R$ {{ "%.2f"|format(presente.preco) if presente.preco else 'N/A' }}</td>
+                        <td>
+                            <span class="status {{ 'disponivel' if presente.disponivel else 'indisponivel' }}">
+                                {{ 'Disponível' if presente.disponivel else 'Indisponível' }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{{ presente.link_amazon }}" target="_blank" class="btn-acao btn-ver">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                            {% if presente.disponivel %}
+                            <button class="btn-acao btn-remover" onclick="removerPresente({{ presente.id }})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab Confirmações -->
+    <div id="tab-confirmacoes" class="tab-content">
+        <h2>Confirmações de Presença</h2>
+        <div class="table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>E-mail</th>
+                        <th>Telefone</th>
+                        <th>Presença</th>
+                        <th>Acompanhantes</th>
+                        <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for confirmacao in confirmacoes %}
+                    <tr>
+                        <td>{{ confirmacao.nome_convidado }}</td>
+                        <td>{{ confirmacao.email or 'N/A' }}</td>
+                        <td>{{ confirmacao.telefone or 'N/A' }}</td>
+                        <td>
+                            <span class="status {{ 'confirmado' if confirmacao.confirmou_presenca else 'nao-confirmado' }}">
+                                {{ 'Confirmado' if confirmacao.confirmou_presenca else 'Não Confirmado' }}
+                            </span>
+                        </td>
+                        <td>{{ confirmacao.numero_acompanhantes }}</td>
+                        <td>{{ confirmacao.data_confirmacao.strftime('%d/%m/%Y') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Tab Adicionar Presente -->
+    <div id="tab-adicionar" class="tab-content">
+        <h2>Adicionar Novo Presente</h2>
+        <form id="form-adicionar-presente" class="form-admin">
+            <div class="form-group">
+                <label for="nome-presente">Nome do Presente:</label>
+                <input type="text" id="nome-presente" name="nome" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="descricao-presente">Descrição:</label>
+                <textarea id="descricao-presente" name="descricao" rows="3"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="preco-presente">Preço (R$):</label>
+                <input type="number" id="preco-presente" name="preco" step="0.01" min="0">
+            </div>
+            
+            <div class="form-group">
+                <label for="categoria-presente">Categoria:</label>
+                <select id="categoria-presente" name="categoria" required>
+                    <option value="">Selecione uma categoria</option>
+                    <option value="Cozinha">Cozinha</option>
+                    <option value="Mesa e Bar">Mesa e Bar</option>
+                    <option value="Eletrodomésticos">Eletrodomésticos</option>
+                    <option value="Casa">Casa</option>
+                    <option value="Decoração">Decoração</option>
+                    <option value="Outros">Outros</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="link-presente">Link da Amazon:</label>
+                <input type="url" id="link-presente" name="link_amazon" required 
+                       placeholder="https://amazon.com.br/dp/...">
+            </div>
+            
+            <button type="submit" class="btn-adicionar">
+                <i class="fas fa-plus"></i>
+                Adicionar Presente
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal de Confirmação -->
+<div id="modal-confirmacao" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="fecharModalConfirmacao()">&times;</span>
+        <div class="modal-body">
+            <i class="fas fa-check-circle modal-icon"></i>
+            <h3>Sucesso!</h3>
+            <p id="mensagem-modal">Operação realizada com sucesso!</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function mostrarTab(tabName) {
+    // Esconder todas as abas
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Remover classe active de todos os botões
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Mostrar aba selecionada
+    document.getElementById('tab-' + tabName).classList.add('active');
+    
+    // Adicionar classe active ao botão clicado
+    event.target.classList.add('active');
+}
+
+// Adicionar presente
+document.getElementById('form-adicionar-presente').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = {
+        nome: formData.get('nome'),
+        descricao: formData.get('descricao'),
+        preco: parseFloat(formData.get('preco')) || null,
+        categoria: formData.get('categoria'),
+        link_amazon: formData.get('link_amazon')
+    };
+    
+    try {
+        const response = await fetch('/api/adicionar-presente', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            document.getElementById('mensagem-modal').textContent = 'Presente adicionado com sucesso!';
+            document.getElementById('modal-confirmacao').style.display = 'block';
+            this.reset();
+            
+            // Recarregar página após 2 segundos
+            setTimeout(() => {
+                location.reload();
+            }, 2000);
+        } else {
+            alert('Erro ao adicionar presente: ' + result.message);
+        }
+    } catch (error) {
+        alert('Erro ao adicionar presente. Tente novamente.');
+    }
+});
+
+// Remover presente
+async function removerPresente(presenteId) {
+    if (confirm('Tem certeza que deseja remover este presente da lista?')) {
+        try {
+            const response = await fetch(`/api/remover-presente/${presenteId}`, {
+                method: 'DELETE'
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                document.getElementById('mensagem-modal').textContent = 'Presente removido da lista!';
+                document.getElementById('modal-confirmacao').style.display = 'block';
+                
+                // Recarregar página após 2 segundos
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+            } else {
+                alert('Erro ao remover presente: ' + result.message);
+            }
+        } catch (error) {
+            alert('Erro ao remover presente. Tente novamente.');
+        }
+    }
+}
+
+function fecharModalConfirmacao() {
+    document.getElementById('modal-confirmacao').style.display = 'none';
+}
+
+// Fechar modal clicando fora dele
+window.onclick = function(event) {
+    const modal = document.getElementById('modal-confirmacao');
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+{% endblock %}
