@@ -67,7 +67,7 @@ def convite():
     """Página principal do convite interativo"""
     return render_template('convite.html')
 
-@app.route('/lista-presentes')
+@app.route('/lista_presentes')
 def lista_presentes():
     """Página com a lista de presentes"""
     presentes = Presente.query.filter_by(disponivel=True).all()
