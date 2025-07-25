@@ -89,6 +89,16 @@ def lista_presentes():
         # Se der erro, retornar lista vazia mas não quebrar a página
         return render_template('lista_presentes.html', presentes=[])
 
+@app.route('/test_db')
+def test_db():
+    """Rota para testar a conexão com o banco"""
+    try:
+        db.create_all()
+        count = Presente.query.count()
+        return f"Conexão OK! Total de presentes: {count}"
+    except Exception as e:
+        return f"Erro na conexão: {str(e)}"
+
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
     """Página de login do administrador"""
