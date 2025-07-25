@@ -89,6 +89,12 @@ def lista_presentes():
         # Se der erro, retornar lista vazia mas não quebrar a página
         return render_template('lista_presentes.html', presentes=[])
 
+# Rota alternativa para contornar problemas de cache
+@app.route('/presentes')
+def presentes():
+    """Rota alternativa para lista de presentes"""
+    return lista_presentes()
+
 @app.route('/test_db')
 def test_db():
     """Rota para testar a conexão com o banco"""
