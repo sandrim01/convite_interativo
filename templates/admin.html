@@ -27,6 +27,9 @@
         <button class="tab-btn active" onclick="mostrarTab('presentes')">
             <i class="fas fa-gift"></i> Presentes
         </button>
+        <button class="tab-btn" onclick="mostrarTab('selecionados')">
+            <i class="fas fa-heart"></i> Presentes Selecionados
+        </button>
         <button class="tab-btn" onclick="mostrarTab('confirmacoes')">
             <i class="fas fa-users"></i> Confirmações
         </button>
@@ -46,6 +49,8 @@
                         <th>Categoria</th>
                         <th>Preço</th>
                         <th>Status</th>
+                        <th>Selecionado por</th>
+                        <th>Data Seleção</th>
                         <th>Ações</th>
                     </tr>
                 </thead>
@@ -56,15 +61,35 @@
                         <td>{{ presente.categoria }}</td>
                         <td>R$ {{ "%.2f"|format(presente.preco) if presente.preco else 'N/A' }}</td>
                         <td>
+                            {% if presente.selecionado_por %}
+                            <span class="status selecionado">
+                                <i class="fas fa-heart"></i> Escolhido
+                            </span>
+                            {% else %}
                             <span class="status {{ 'disponivel' if presente.disponivel else 'indisponivel' }}">
                                 {{ 'Disponível' if presente.disponivel else 'Indisponível' }}
                             </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if presente.selecionado_por %}
+                            <strong class="nome-convidado">{{ presente.selecionado_por }}</strong>
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if presente.data_selecao %}
+                            {{ presente.data_selecao.strftime('%d/%m/%Y às %H:%M') }}
+                            {% else %}
+                            <span class="text-muted">-</span>
+                            {% endif %}
                         </td>
                         <td>
                             <a href="{{ presente.link_amazon }}" target="_blank" class="btn-acao btn-ver">
                                 <i class="fas fa-external-link-alt"></i>
                             </a>
-                            {% if presente.disponivel %}
+                            {% if presente.disponivel and not presente.selecionado_por %}
                             <button class="btn-acao btn-remover" onclick="removerPresente({{ presente.id }})">
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -75,6 +100,67 @@
                 </tbody>
             </table>
         </div>
+    </div>
+
+    <!-- Tab Presentes Selecionados -->
+    <div id="tab-selecionados" class="tab-content">
+        <h2>Presentes Selecionados pelos Convidados</h2>
+        {% if presentes_selecionados %}
+        <div class="estatisticas-selecionados">
+            <div class="stat-card">
+                <i class="fas fa-heart"></i>
+                <div class="stat-info">
+                    <h3>{{ presentes_selecionados|length }}</h3>
+                    <p>Presentes Escolhidos</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-gift"></i>
+                <div class="stat-info">
+                    <h3>{{ presentes|length - presentes_selecionados|length }}</h3>
+                    <p>Ainda Disponíveis</p>
+                </div>
+            </div>
+        </div>
+        <div class="table-container">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Presente</th>
+                        <th>Categoria</th>
+                        <th>Preço</th>
+                        <th>Escolhido por</th>
+                        <th>Data da Escolha</th>
+                        <th>Link Amazon</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for presente in presentes_selecionados %}
+                    <tr>
+                        <td><strong>{{ presente.nome }}</strong></td>
+                        <td>{{ presente.categoria }}</td>
+                        <td>R$ {{ "%.2f"|format(presente.preco) if presente.preco else 'N/A' }}</td>
+                        <td>
+                            <span class="nome-convidado">{{ presente.selecionado_por }}</span>
+                        </td>
+                        <td>{{ presente.data_selecao.strftime('%d/%m/%Y às %H:%M') }}</td>
+                        <td>
+                            <a href="{{ presente.link_amazon }}" target="_blank" class="btn-acao btn-ver">
+                                <i class="fas fa-external-link-alt"></i> Ver
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-heart-broken"></i>
+            <h3>Nenhum presente foi selecionado ainda</h3>
+            <p>Quando os convidados começarem a escolher presentes, eles aparecerão aqui.</p>
+        </div>
+        {% endif %}
     </div>
 
     <!-- Tab Confirmações -->

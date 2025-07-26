@@ -1018,6 +1018,28 @@ body {
     color: #721c24;
 }
 
+.status.selecionado {
+    background: linear-gradient(135deg, #28a745, #20c997);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.nome-convidado {
+    color: #28a745;
+    font-weight: 600;
+    background: rgba(40, 167, 69, 0.1);
+    padding: 4px 8px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+.text-muted {
+    color: #6c757d;
+    font-style: italic;
+}
+
 .btn-acao {
     background: none;
     border: none;
@@ -1183,4 +1205,81 @@ body {
 .btn-destacado {
     border: 3px solid #DC143C;
     box-shadow: 0 6px 15px rgba(220, 20, 60, 0.4);
+}
+
+/* Estilos para estatísticas dos presentes selecionados */
+.estatisticas-selecionados {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex: 1;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.stat-card i {
+    font-size: 2rem;
+    opacity: 0.8;
+}
+
+.stat-info h3 {
+    font-size: 2rem;
+    margin: 0;
+    font-weight: 700;
+}
+
+.stat-info p {
+    margin: 5px 0 0 0;
+    opacity: 0.9;
+    font-size: 0.9rem;
+}
+
+/* Estado vazio */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    margin: 0 0 10px 0;
+    color: #495057;
+}
+
+.empty-state p {
+    margin: 0;
+    max-width: 400px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* Responsividade para estatísticas */
+@media (max-width: 768px) {
+    .estatisticas-selecionados {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .stat-card {
+        padding: 15px;
+    }
+    
+    .stat-info h3 {
+        font-size: 1.5rem;
+    }
 }
