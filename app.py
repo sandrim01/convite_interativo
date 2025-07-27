@@ -13,6 +13,11 @@ load_dotenv()
 
 app = Flask(__name__)
 
+# Configuração de logging para produção
+if not app.debug:
+    import logging
+    app.logger.setLevel(logging.INFO)
+
 # Configuração do banco de dados
 database_url = os.getenv('DATABASE_URL')
 if database_url and database_url.startswith('postgres://'):
@@ -101,32 +106,38 @@ class Convidado(db.Model):
 @app.route('/')
 def convite():
     """Página principal do convite interativo"""
-    codigo = request.args.get('codigo')
-    
-    # Se não tem código, mostrar tela de identificação
-    if not codigo:
-        return render_template('convite.html', convidado=None)
-    
-    # Buscar convidado pelo código
-    convidado = Convidado.query.filter_by(codigo_convite=codigo).first()
-    
-    # Se código inválido, mostrar tela de identificação
-    if not convidado:
-        return render_template('convite.html', convidado=None, erro_codigo=True)
-    
-    # Atualizar última visita
-    convidado.data_ultima_visita = datetime.utcnow()
-    db.session.commit()
-    
-    # Se já respondeu, verificar o tipo de resposta
-    if convidado.ja_confirmou:
-        if convidado.status_resposta == 'confirmado':
-            return redirect(url_for('resumo_convite', codigo=codigo))
-        elif convidado.status_resposta == 'nao_comparecera':
-            return render_template('convite.html', convidado=convidado, abrir_mensagem_final=True)
-    
-    # Primeira visita ou ainda não confirmou - mostrar convite completo
-    return render_template('convite.html', convidado=convidado)
+    try:
+        codigo = request.args.get('codigo')
+        
+        # Se não tem código, mostrar tela de identificação
+        if not codigo:
+            return render_template('convite.html', convidado=None)
+        
+        # Buscar convidado pelo código
+        convidado = Convidado.query.filter_by(codigo_convite=codigo).first()
+        
+        # Se código inválido, mostrar tela de identificação
+        if not convidado:
+            return render_template('convite.html', convidado=None, erro_codigo=True)
+        
+        # Atualizar última visita
+        convidado.data_ultima_visita = datetime.utcnow()
+        db.session.commit()
+        
+        # Se já respondeu, verificar o tipo de resposta
+        if convidado.ja_confirmou:
+            if convidado.status_resposta == 'confirmado':
+                return redirect(url_for('resumo_convite', codigo=codigo))
+            elif convidado.status_resposta == 'nao_comparecera':
+                return render_template('convite.html', convidado=convidado, abrir_mensagem_final=True)
+        
+        # Primeira visita ou ainda não confirmou - mostrar convite completo
+        return render_template('convite.html', convidado=convidado)
+        
+    except Exception as e:
+        app.logger.error(f"Erro na rota principal: {str(e)}")
+        # Em caso de erro, mostrar página básica
+        return render_template('convite.html', convidado=None, erro_sistema=True)
 
 @app.route('/resumo/<codigo>')
 def resumo_convite(codigo):
@@ -256,6 +267,24 @@ def test_db():
         return f"Conexão OK! Total de presentes: {count}"
     except Exception as e:
         return f"Erro na conexão: {str(e)}"
+
+@app.route('/init_database')
+def init_database():
+    """Rota para inicializar o banco de dados manualmente"""
+    try:
+        init_db()
+        return "Banco de dados inicializado com sucesso!"
+    except Exception as e:
+        return f"Erro ao inicializar banco: {str(e)}"
+
+@app.route('/health')
+def health_check():
+    """Health check simples para verificar se a aplicação está funcionando"""
+    return jsonify({
+        'status': 'ok',
+        'message': 'Aplicação funcionando',
+        'database': 'connected' if database_url else 'sqlite'
+    })
 
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
@@ -716,7 +745,14 @@ def init_db():
             print("Tabelas criadas com sucesso!")
             
             # Verifica se já existem presentes cadastrados
-            if Presente.query.count() == 0:
+            presente_count = 0
+            try:
+                presente_count = Presente.query.count()
+            except:
+                # Se der erro, assume que não há presentes
+                presente_count = 0
+            
+            if presente_count == 0:
                 print("Adicionando presentes de exemplo...")
                 # Adiciona alguns presentes de exemplo
                 presentes_exemplo = [
@@ -743,14 +779,18 @@ def init_db():
                     }
                 ]
                 
-                for presente_data in presentes_exemplo:
-                    presente = Presente(**presente_data)
-                    db.session.add(presente)
-                
-                db.session.commit()
-                print("Banco de dados inicializado com dados de exemplo!")
+                try:
+                    for presente_data in presentes_exemplo:
+                        presente = Presente(**presente_data)
+                        db.session.add(presente)
+                    
+                    db.session.commit()
+                    print("Banco de dados inicializado com dados de exemplo!")
+                except Exception as e:
+                    print(f"Erro ao adicionar presentes de exemplo: {e}")
+                    db.session.rollback()
             else:
-                print("Banco já possui dados, pulando inicialização.")
+                print(f"Banco já possui {presente_count} presentes, pulando inicialização.")
                 
     except Exception as e:
         print(f"Erro ao inicializar banco de dados: {e}")
@@ -760,7 +800,11 @@ def init_db():
         pass
 
 if __name__ == '__main__':
-    init_db()
+    # Em produção, não executar init_db automaticamente
+    # pois pode causar conflitos com múltiplas instâncias
+    if os.getenv('FLASK_ENV') == 'development':
+        init_db()
+    
     # Em produção, o gunicorn gerencia a aplicação
     # Em desenvolvimento, rodamos com debug
     port = int(os.getenv('PORT', 5000))
