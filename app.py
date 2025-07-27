@@ -380,21 +380,35 @@ def health_check():
 def debug_auth():
     """Debug da autenticação e configuração"""
     try:
-        return jsonify({
+        # Verificar configurações críticas
+        config_info = {
             'status': 'ok',
             'session_logged_in': session.get('admin_logged_in', False),
             'admin_password_configured': bool(ADMIN_PASSWORD),
             'admin_password_length': len(ADMIN_PASSWORD) if ADMIN_PASSWORD else 0,
+            'admin_password_value': ADMIN_PASSWORD,  # Para debug apenas
             'secret_key_configured': bool(app.config.get('SECRET_KEY')),
             'secret_key_length': len(app.config.get('SECRET_KEY', '')) if app.config.get('SECRET_KEY') else 0,
             'session_config': {
                 'cookie_secure': app.config.get('SESSION_COOKIE_SECURE'),
                 'cookie_httponly': app.config.get('SESSION_COOKIE_HTTPONLY'),
                 'cookie_samesite': app.config.get('SESSION_COOKIE_SAMESITE')
-            }
-        })
+            },
+            'database_connected': True,
+            'templates_path': app.template_folder
+        }
+        
+        # Testar conexão com banco
+        try:
+            db.session.execute('SELECT 1')
+            config_info['database_status'] = 'connected'
+        except Exception as db_error:
+            config_info['database_status'] = f'error: {str(db_error)}'
+            config_info['database_connected'] = False
+        
+        return jsonify(config_info)
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e), 'status': 'error'})
 
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
@@ -429,30 +443,70 @@ def admin_logout():
     flash('Logout realizado com sucesso!', 'success')
     return redirect(url_for('convite'))
 
-@app.route('/login_direto')
-def login_direto():
-    """Login direto com senha padrão para debug"""
+@app.route('/login_simples', methods=['GET', 'POST'])
+def login_simples():
+    """Login simplificado para debug"""
     try:
-        # Usar senha padrão para debug
-        senha_debug = 'casamento2024'
-        if senha_debug == ADMIN_PASSWORD:
-            session['admin_logged_in'] = True
-            session.permanent = True
-            return jsonify({
-                'success': True,
-                'message': 'Login direto realizado com sucesso!',
-                'redirect_url': url_for('admin', _external=True)
-            })
-        else:
-            return jsonify({
-                'success': False,
-                'message': f'Senha não confere. Esperada: {len(ADMIN_PASSWORD)} chars, configurada: {bool(ADMIN_PASSWORD)}'
-            })
+        if request.method == 'POST':
+            senha = request.form.get('senha', '').strip()
+            
+            app.logger.info(f"=== DEBUG LOGIN ===")
+            app.logger.info(f"Senha recebida: '{senha}'")
+            app.logger.info(f"Senha esperada: '{ADMIN_PASSWORD}'")
+            app.logger.info(f"Senhas são iguais: {senha == ADMIN_PASSWORD}")
+            app.logger.info(f"Tipo senha recebida: {type(senha)}")
+            app.logger.info(f"Tipo senha esperada: {type(ADMIN_PASSWORD)}")
+            
+            if senha == ADMIN_PASSWORD:
+                session['admin_logged_in'] = True
+                session.permanent = True
+                app.logger.info("✅ Login bem-sucedido!")
+                
+                return f"""
+                <h1>✅ Login Realizado!</h1>
+                <p>Senha correta: {senha}</p>
+                <p>Sessão configurada: {session.get('admin_logged_in')}</p>
+                <p><a href="/admin">Ir para Admin</a></p>
+                <p><a href="/debug_auth">Debug Auth</a></p>
+                """
+            else:
+                app.logger.warning("❌ Senha incorreta")
+                return f"""
+                <h1>❌ Senha Incorreta</h1>
+                <p>Recebida: '{senha}' (len: {len(senha)})</p>
+                <p>Esperada: '{ADMIN_PASSWORD}' (len: {len(ADMIN_PASSWORD)})</p>
+                <p>São iguais: {senha == ADMIN_PASSWORD}</p>
+                <p><a href="/login_simples">Tentar novamente</a></p>
+                """
+        
+        # GET - mostrar formulário simples
+        return f"""
+        <h1>🔐 Login Simples (Debug)</h1>
+        <form method="POST">
+            <p>
+                <label>Senha:</label><br>
+                <input type="password" name="senha" required>
+            </p>
+            <p>
+                <button type="submit">Entrar</button>
+            </p>
+        </form>
+        <p><strong>Senha esperada:</strong> {ADMIN_PASSWORD}</p>
+        <p><strong>Configuração:</strong></p>
+        <ul>
+            <li>SECRET_KEY: {'✅' if app.config.get('SECRET_KEY') else '❌'}</li>
+            <li>Admin Password: {'✅' if ADMIN_PASSWORD else '❌'}</li>
+        </ul>
+        <p><a href="/debug_auth">Ver Debug Auth</a></p>
+        """
+        
     except Exception as e:
-            return jsonify({
-                'success': False,
-                'message': f'Erro no login direto: {str(e)}'
-            })
+        return f"""
+        <h1>❌ Erro no Login</h1>
+        <p><strong>Erro:</strong> {str(e)}</p>
+        <p><strong>Tipo:</strong> {type(e).__name__}</p>
+        <p><a href="/debug_auth">Debug Auth</a></p>
+        """
 
 @app.route('/force_init')
 def force_init():
@@ -489,7 +543,9 @@ def force_init():
             'success': False,
             'error': str(e),
             'suggestion': 'Verifique se o banco PostgreSQL está funcionando na Railway'
-        })@app.route('/admin')
+        })
+
+@app.route('/admin')
 @login_required
 def admin():
     """Página administrativa para gerenciar presentes"""
