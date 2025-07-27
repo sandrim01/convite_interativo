@@ -368,6 +368,21 @@ body {
     box-shadow: 0 2px 8px rgba(220, 20, 60, 0.4);
 }
 
+/* Botão Voltar - estilo diferenciado */
+.btn-voltar {
+    background: linear-gradient(135deg, #f8f9fa, #e9ecef, #dee2e6) !important;
+    color: #6c757d !important;
+    border-color: #6c757d !important;
+    opacity: 0.8;
+}
+
+.btn-voltar:hover {
+    background: linear-gradient(135deg, #e9ecef, #dee2e6, #ced4da) !important;
+    color: #495057 !important;
+    border-color: #495057 !important;
+    opacity: 1;
+}
+
 .acoes-local, .acoes-recepcao, .acoes-confirmacao, .acoes-presentes {
     display: flex;
     flex-wrap: wrap;
@@ -392,6 +407,28 @@ body {
 /* Formulário */
 .form-confirmacao {
     max-width: 500px;
+}
+
+/* Alertas */
+.alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alert-error {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+    color: #721c24;
+}
+
+.alert i {
+    font-size: 1.2em;
 }
 
 .form-group {
@@ -422,7 +459,8 @@ body {
 .radio-group {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+    margin-top: 10px;
 }
 
 .radio-label {
@@ -437,6 +475,87 @@ body {
 
 .radio-label:hover {
     background-color: #f0f0f0;
+}
+
+/* Novos estilos para radio buttons customizados */
+.radio-label-custom {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    padding: 15px 20px;
+    border: 2px solid #FFB6C1;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    background: linear-gradient(135deg, #ffffff, #fefefe);
+    box-shadow: 0 2px 8px rgba(255, 182, 193, 0.1);
+    position: relative;
+}
+
+.radio-label-custom:hover {
+    border-color: #ff99aa;
+    background: linear-gradient(135deg, #ffeef0, #fff0f2);
+    box-shadow: 0 4px 12px rgba(255, 182, 193, 0.2);
+    transform: translateY(-1px);
+}
+
+.radio-label-custom input[type="radio"] {
+    display: none;
+}
+
+.radio-custom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #FFB6C1;
+    border-radius: 50%;
+    position: relative;
+    transition: all 0.3s ease;
+    background-color: white;
+}
+
+.radio-label-custom input[type="radio"]:checked + .radio-custom {
+    border-color: #e91e63;
+    background-color: #e91e63;
+    box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.1);
+}
+
+.radio-label-custom input[type="radio"]:checked + .radio-custom::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background-color: white;
+    border-radius: 50%;
+}
+
+.radio-label-custom input[type="radio"]:checked ~ .radio-text {
+    color: #e91e63;
+    font-weight: 600;
+}
+
+.radio-text {
+    font-size: 15px;
+    color: #333;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+/* Estilos para campos readonly */
+.campo-readonly {
+    background-color: #f8f9fa !important;
+    border: 2px solid #e9ecef !important;
+    color: #6c757d !important;
+    cursor: not-allowed !important;
+    font-weight: 500;
+}
+
+.campo-readonly:focus {
+    outline: none !important;
+    border-color: #e9ecef !important;
+    box-shadow: none !important;
 }
 
 /* Mapa */
@@ -1066,6 +1185,28 @@ body {
     background: #f8d7da;
 }
 
+.btn-excluir {
+    color: #dc3545;
+    border: 1px solid #dc3545;
+}
+
+.btn-excluir:hover {
+    background: #dc3545;
+    color: white;
+    transform: scale(1.05);
+}
+
+.btn-marcar-enviado {
+    color: #28a745;
+    border: 1px solid #28a745;
+}
+
+.btn-marcar-enviado:hover {
+    background: #28a745;
+    color: white;
+    transform: scale(1.05);
+}
+
 /* Formulário admin */
 .form-admin {
     max-width: 600px;
@@ -1281,5 +1422,796 @@ body {
     
     .stat-info h3 {
         font-size: 1.5rem;
+    }
+}
+
+/* ===== ESTILOS PARA IDENTIFICAÇÃO DE CONVIDADOS ===== */
+.identificacao-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.identificacao-content {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.coracao-welcome {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    animation: heartbeat 2s ease-in-out infinite;
+}
+
+.titulo-identificacao {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2.5rem;
+    color: #8B4513;
+    margin-bottom: 10px;
+}
+
+.subtitulo-identificacao {
+    color: #666;
+    margin-bottom: 30px;
+    font-size: 1.1rem;
+}
+
+.form-identificacao {
+    margin-bottom: 30px;
+}
+
+.form-identificacao .form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-identificacao label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-identificacao input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-identificacao input:focus {
+    outline: none;
+    border-color: #dc143c;
+    box-shadow: 0 0 10px rgba(220, 20, 60, 0.2);
+}
+
+.btn-identificar {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #dc143c, #b91c3c);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+}
+
+.btn-identificar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 20, 60, 0.4);
+}
+
+.identificacao-alternativa {
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.identificacao-alternativa p {
+    color: #666;
+    margin-bottom: 15px;
+}
+
+.btn-continuar-generico {
+    padding: 10px 20px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-continuar-generico:hover {
+    background: #5a6268;
+    transform: translateY(-1px);
+}
+
+.texto-convite-personalizado {
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    line-height: 1.6;
+}
+
+.nome-convidado {
+    font-weight: bold;
+    color: #dc143c;
+    font-size: 1.2em;
+}
+
+/* ===== ESTILOS PARA PÁGINA DE RESUMO ===== */
+.resumo-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.resumo-header {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.coracao-resumo {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    animation: heartbeat 2s ease-in-out infinite;
+}
+
+.titulo-resumo {
+    font-family: 'Dancing Script', cursive;
+    font-size: 3rem;
+    color: #8B4513;
+    margin-bottom: 10px;
+}
+
+.subtitulo-resumo {
+    font-family: 'Playfair Display', serif;
+    color: #666;
+    font-size: 1.3rem;
+}
+
+.secao-resumo {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border-left: 5px solid #dc143c;
+}
+
+.icone-secao {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #dc143c, #b91c3c);
+    border-radius: 50%;
+    text-align: center;
+    line-height: 40px;
+    color: white;
+    margin-right: 15px;
+    margin-bottom: 15px;
+}
+
+.secao-resumo h3 {
+    color: #333;
+    margin-bottom: 15px;
+    font-family: 'Playfair Display', serif;
+}
+
+.status-confirmado {
+    color: #28a745;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.status-nao-confirmado {
+    color: #dc3545;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.info-item i {
+    color: #dc143c;
+    margin-top: 3px;
+}
+
+.detalhes-grid {
+    display: grid;
+    gap: 15px;
+}
+
+.detalhe-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.detalhe-item:last-child {
+    border-bottom: none;
+}
+
+.label {
+    font-weight: 600;
+    color: #666;
+}
+
+.valor {
+    color: #333;
+    text-align: right;
+}
+
+.lista-presentes-selecionados {
+    display: grid;
+    gap: 15px;
+}
+
+.presente-selecionado {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border: 1px solid #e0e0e0;
+}
+
+.presente-nome {
+    font-weight: 600;
+    color: #333;
+}
+
+.presente-preco {
+    color: #dc143c;
+    font-weight: bold;
+}
+
+.btn-amazon-mini {
+    padding: 8px 12px;
+    background: #ff9500;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.btn-amazon-mini:hover {
+    background: #e6851e;
+    transform: translateY(-1px);
+}
+
+.botoes-acoes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.btn-acao-resumo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: #6c757d;
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.btn-acao-resumo:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.btn-confirmar-resumo {
+    background: linear-gradient(135deg, #dc143c, #b91c3c);
+}
+
+.btn-confirmar-resumo:hover {
+    box-shadow: 0 4px 15px rgba(220, 20, 60, 0.3);
+}
+
+.mensagem-conteudo {
+    text-align: center;
+}
+
+.mensagem-texto {
+    font-style: italic;
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.assinatura-resumo {
+    color: #8B4513;
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.3rem;
+}
+
+.contatos {
+    display: grid;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.contato-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.contato-item i {
+    color: #28a745;
+}
+
+/* Modal de Compartilhamento */
+.link-compartilhar {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.link-compartilhar input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+.btn-copiar {
+    padding: 10px 15px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-copiar:hover {
+    background: #0056b3;
+}
+
+/* Animação do coração */
+@keyframes heartbeat {
+    0%, 50%, 100% { transform: scale(1); }
+    25%, 75% { transform: scale(1.1); }
+}
+
+/* Responsividade para resumo */
+@media (max-width: 768px) {
+    .resumo-container {
+        padding: 10px;
+    }
+    
+    .titulo-resumo {
+        font-size: 2.5rem;
+    }
+    
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .botoes-acoes {
+        grid-template-columns: 1fr;
+    }
+    
+    .presente-selecionado {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .link-compartilhar {
+        flex-direction: column;
+    }
+}
+
+/* ===== ESTILOS ADICIONAIS PARA ADMIN ===== */
+.form-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    border: 1px solid #e0e0e0;
+}
+
+.form-section h3 {
+    margin-bottom: 20px;
+    color: #333;
+    font-family: 'Playfair Display', serif;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.convidados-section {
+    margin-top: 20px;
+}
+
+.convidados-section h3 {
+    margin-bottom: 15px;
+    color: #333;
+    font-family: 'Playfair Display', serif;
+}
+
+.loading-row, .empty-row, .error-row {
+    text-align: center;
+    padding: 40px;
+    color: #666;
+    font-style: italic;
+}
+
+.loading-row i {
+    margin-bottom: 10px;
+    color: #007bff;
+}
+
+.empty-row i {
+    margin-bottom: 10px;
+    color: #6c757d;
+    font-size: 2rem;
+}
+
+.error-row i {
+    margin-bottom: 10px;
+    color: #dc3545;
+    font-size: 2rem;
+}
+
+.btn-copiar {
+    background: #17a2b8;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+}
+
+.btn-copiar:hover {
+    background: #138496;
+    transform: translateY(-1px);
+}
+
+.status.pendente {
+    background: #ffc107;
+    color: #856404;
+}
+
+.status.confirmado {
+    background: #28a745;
+    color: white;
+}
+
+/* ===== ESTILOS PARA WHATSAPP ===== */
+
+.whatsapp-section {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 10px;
+    margin-top: 30px;
+    border: 1px solid #e9ecef;
+}
+
+.whatsapp-section h3 {
+    color: #25D366;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.whatsapp-section h3::before {
+    content: "\f232";
+    font-family: "Font Awesome 6 Brands";
+    font-size: 1.2em;
+}
+
+.whatsapp-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.whatsapp-info {
+    background: #e8f5e8;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #25D366;
+}
+
+.whatsapp-info p {
+    margin: 0;
+    color: #155724;
+    font-size: 0.95rem;
+}
+
+.whatsapp-actions {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.btn-whatsapp, .btn-whatsapp-all {
+    background: linear-gradient(135deg, #25D366, #128C7E);
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+}
+
+.btn-whatsapp:hover, .btn-whatsapp-all:hover {
+    background: linear-gradient(135deg, #128C7E, #075E54);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+}
+
+.btn-whatsapp-all {
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+.btn-whatsapp-all:hover {
+    background: linear-gradient(135deg, #0056b3, #004085);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
+}
+
+/* Estilo especial para o botão "Abrir TODOS os WhatsApps" */
+.btn-whatsapp-all:first-of-type {
+    background: linear-gradient(135deg, #FF4500, #FF6347) !important;
+    animation: pulseWhatsApp 2s ease-in-out infinite;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 2px solid #FF4500;
+}
+
+.btn-whatsapp-all:first-of-type:hover {
+    background: linear-gradient(135deg, #FF6347, #FF7F50) !important;
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(255, 69, 0, 0.5) !important;
+    border-color: #FF6347;
+}
+
+@keyframes pulseWhatsApp {
+    0%, 100% { 
+        box-shadow: 0 4px 15px rgba(255, 69, 0, 0.3);
+        transform: scale(1);
+    }
+    50% { 
+        box-shadow: 0 6px 20px rgba(255, 69, 0, 0.5);
+        transform: scale(1.02);
+    }
+}
+
+.links-lista {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    background: white;
+}
+
+.link-whatsapp-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e9ecef;
+    transition: background-color 0.2s ease;
+}
+
+.link-whatsapp-item:last-child {
+    border-bottom: none;
+}
+
+.link-whatsapp-item:hover {
+    background: #f8f9fa;
+}
+
+.link-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.link-info strong {
+    color: #333;
+    font-size: 1rem;
+}
+
+.whatsapp-number {
+    color: #666;
+    font-size: 0.9rem;
+    font-family: monospace;
+}
+
+.link-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-whatsapp-abrir {
+    background: #25D366;
+    color: white;
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+}
+
+.btn-whatsapp-abrir:hover {
+    background: #128C7E;
+    transform: translateY(-1px);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-marcar-enviado {
+    background: #28a745;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.3s ease;
+}
+
+.btn-marcar-enviado:hover {
+    background: #1e7e34;
+    transform: translateY(-1px);
+}
+
+.btn-whatsapp-individual {
+    background: #25D366;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+    margin-bottom: 5px;
+}
+
+.btn-whatsapp-individual:hover {
+    background: #128C7E;
+    transform: translateY(-1px);
+}
+
+.envio-status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.envio-status.enviado {
+    background: #d4edda;
+    color: #155724;
+}
+
+.envio-status.nao-enviado {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.status-pendente {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-convite_enviado {
+    background: #cce5ff;
+    color: #004085;
+}
+
+.status-confirmado {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-nao_comparecera {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.acoes-convidado {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+@media (max-width: 768px) {
+    .whatsapp-actions {
+        flex-direction: column;
+    }
+    
+    .link-whatsapp-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .link-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .acoes-convidado {
+        flex-direction: row;
+        flex-wrap: wrap;
     }
 }

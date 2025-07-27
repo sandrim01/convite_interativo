@@ -2,21 +2,67 @@
 
 {% block content %}
 <div class="convite-container">
-    <!-- Capa do Convite -->
-    <div class="carta-envelope" id="envelope">
-        <div class="envelope-front">
-            <div class="envelope-content">
-                <h1 class="nomes-noivos">Samuel & Iara </h1>
-                <p class="texto-convite">Convidam você para celebrar nosso amor</p>
-                <button class="btn-abrir btn-destacado" onclick="abrirConvite()">
-                    <i class="fas fa-envelope-open"></i>
-                    Abrir Convite
+    <!-- Tela de Identificação (apenas quando não há código ou código inválido) -->
+    {% if not convidado %}
+    <div class="identificacao-container" id="identificacao">
+        <div class="identificacao-content">
+            <div class="coracao-welcome">💕</div>
+            <h1 class="titulo-identificacao">Samuel & Iara</h1>
+            
+            {% if erro_codigo %}
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-triangle"></i>
+                Link de convite inválido. Verifique o código ou informe seus dados:
+            </div>
+            {% else %}
+            <p class="subtitulo-identificacao">Para personalizar seu convite, informe:</p>
+            {% endif %}
+            
+            <form id="form-identificacao" class="form-identificacao">
+                <div class="form-group">
+                    <label for="identificador">Seu nome ou WhatsApp:</label>
+                    <input type="text" id="identificador" name="identificador" 
+                           placeholder="Ex: João Silva ou 11999999999" required>
+                </div>
+                
+                <button type="submit" class="btn-identificar btn-destacado">
+                    <i class="fas fa-search"></i>
+                    Buscar meu convite
+                </button>
+            </form>
+            
+            <div class="identificacao-alternativa">
+                <p>Não está cadastrado?</p>
+                <button class="btn-continuar-generico" onclick="continuarGenerico()">
+                    <i class="fas fa-envelope"></i>
+                    Continuar sem personalização
                 </button>
             </div>
         </div>
     </div>
+    {% else %}
+    
+    <!-- Convite Personalizado (quando há convidado válido) -->
+    <div class="convite-personalizado">
+        <!-- Capa do Convite -->
+        <div class="carta-envelope" id="envelope">
+            <div class="envelope-front">
+                <div class="envelope-content">
+                    <h1 class="nomes-noivos">Samuel & Iara</h1>
+                    <p class="texto-convite-personalizado">
+                        <span class="nome-convidado">{{ convidado.nome }}</span>,<br>
+                        Convidamos você para celebrar nosso amor
+                    </p>
+                    <button class="btn-abrir btn-destacado" onclick="abrirConvite()">
+                        <i class="fas fa-envelope-open"></i>
+                        Abrir Convite
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div> <!-- Fim convite-personalizado -->
 
-    <!-- Carta do Convite -->
+    <!-- Carta do Convite (sempre disponível) -->
     <div class="carta-content" id="carta" style="display: none;">
         <div class="carta-header">
             <div class="ornamento-top"></div>
@@ -59,9 +105,13 @@
                             <i class="fas fa-directions"></i>
                             Como Chegar
                         </button>
-                        <button class="btn-acao" onclick="mostrarRecepcao()">
-                            <i class="fas fa-glass-cheers"></i>
-                            Ver Local da Recepção
+                        <button class="btn-acao" onclick="mostrarConfirmacao()">
+                            <i class="fas fa-heart"></i>
+                            Confirmar Presença
+                        </button>
+                        <button class="btn-acao btn-voltar" onclick="voltarAoInicio()">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
                         </button>
                     </div>
                 </div>
@@ -80,9 +130,13 @@
                             <i class="fas fa-directions"></i>
                             Como Chegar
                         </button>
-                        <button class="btn-acao" onclick="mostrarConfirmacao()">
-                            <i class="fas fa-heart"></i>
-                            Confirmar Presença
+                        <button class="btn-acao" onclick="mostrarPresentes()">
+                            <i class="fas fa-gift"></i>
+                            Ver Lista de Presentes
+                        </button>
+                        <button class="btn-acao btn-voltar" onclick="mostrarConfirmacao()">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
                         </button>
                     </div>
                 </div>
@@ -94,29 +148,30 @@
                     <form id="form-confirmacao" class="form-confirmacao">
                         <div class="form-group">
                             <label for="nome">Nome Completo:</label>
-                            <input type="text" id="nome" name="nome" required>
+                            <input type="text" id="nome" name="nome" required readonly 
+                                   value="{{ convidado.nome if convidado else '' }}" 
+                                   class="campo-readonly">
                         </div>
                         
                         <div class="form-group">
-                            <label for="email">E-mail:</label>
-                            <input type="email" id="email" name="email">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="telefone">Telefone:</label>
-                            <input type="tel" id="telefone" name="telefone">
+                            <label for="telefone">WhatsApp/Telefone:</label>
+                            <input type="tel" id="telefone" name="telefone" readonly 
+                                   value="{{ convidado.whatsapp if convidado else '' }}" 
+                                   class="campo-readonly">
                         </div>
                         
                         <div class="form-group">
                             <label>Confirma sua presença?</label>
                             <div class="radio-group">
-                                <label class="radio-label">
+                                <label class="radio-label-custom">
                                     <input type="radio" name="presenca" value="true" required>
-                                    <span>Sim, estarei presente! 🎉</span>
+                                    <span class="radio-custom"></span>
+                                    <span class="radio-text">Sim, estarei presente! 🎉</span>
                                 </label>
-                                <label class="radio-label">
+                                <label class="radio-label-custom">
                                     <input type="radio" name="presenca" value="false" required>
-                                    <span>Infelizmente não poderei comparecer 😢</span>
+                                    <span class="radio-custom"></span>
+                                    <span class="radio-text">Infelizmente não poderei comparecer 😢</span>
                                 </label>
                             </div>
                         </div>
@@ -142,9 +197,9 @@
                                 <i class="fas fa-check"></i>
                                 Confirmar Presença
                             </button>
-                            <button type="button" class="btn-acao" onclick="mostrarPresentes()">
-                                <i class="fas fa-gift"></i>
-                                Ver Lista de Presentes
+                            <button type="button" class="btn-acao btn-voltar" onclick="mostrarLocal()">
+                                <i class="fas fa-arrow-left"></i>
+                                Voltar
                             </button>
                         </div>
                     </form>
@@ -166,6 +221,181 @@
                         <button class="btn-acao" onclick="mostrarAgradecimentos()">
                             <i class="fas fa-heart"></i>
                             Mensagem Final
+                        </button>
+                        <button class="btn-acao btn-voltar" onclick="mostrarConfirmacao()">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="secao-agradecimentos" id="secao-agradecimentos" style="display: none;">
+                <div class="info-evento final">
+                    <div class="coracao-grande">💕</div>
+                    <h3>Obrigado!</h3>
+                    <p class="mensagem-final">
+                        Esperamos celebrar este momento especial ao seu lado.<br>
+                        Sua presença tornará nosso dia ainda mais especial!
+                    </p>
+                    <div class="assinatura">
+                        <p>Com amor,<br><strong>Samuel & Iara</strong></p>
+                    </div>
+                    <button class="btn-acao" onclick="voltarAoInicio()">
+                        <i class="fas fa-redo"></i>
+                        Voltar ao Início
+                    </button>
+                    
+                    <!-- Link discreto para administração -->
+                    <div class="admin-access" style="margin-top: 30px; text-align: center;">
+                        <a href="{{ url_for('admin_login') }}" class="admin-link">
+                            <i class="fas fa-cog"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <!-- Fim convite-personalizado -->
+    {% endif %}
+
+    <!-- Carta do Convite (sempre disponível) -->
+    <div class="carta-content" id="carta" style="display: none;">
+        <div class="carta-header">
+            <div class="ornamento-top"></div>
+            <h2 class="titulo-casamento">Nosso Casamento</h2>
+            <div class="coracao">❤️</div>
+        </div>
+
+        <div class="carta-body">
+            <div class="secao-nomes">
+                <h1 class="nomes-principais">Samuel & Iara</h1>
+                <p class="subtitulo">Têm o prazer de convidá-lo(a) para celebrar nossa união</p>
+            </div>
+
+            <div class="secao-data" id="secao-data">
+                <div class="info-evento">
+                    <h3><i class="fas fa-calendar-alt"></i> Data & Horário</h3>
+                    <div class="data-info">
+                        <p class="data">Sábado, 15 de Setembro de 2024</p>
+                        <p class="horario">às 18:00 horas</p>
+                    </div>
+                    <button class="btn-acao btn-destacado" onclick="mostrarLocal()">
+                        <i class="fas fa-map-marker-alt"></i>
+                        Ver Local da Cerimônia
+                    </button>
+                </div>
+            </div>
+
+            <div class="secao-local" id="secao-local" style="display: none;">
+                <div class="info-evento">
+                    <h3><i class="fas fa-church"></i> Local da Cerimônia</h3>
+                    <div class="local-info">
+                        <p class="nome-local">Igreja São José</p>
+                        <p class="endereco">Rua das Flores, 123 - Centro<br>São Paulo - SP</p>
+                    </div>
+                    <div class="mapa-container">
+                        <div id="mapa" style="height: 300px; border-radius: 10px;"></div>
+                    </div>
+                    <div class="acoes-local">
+                        <button class="btn-acao" onclick="abrirGoogleMaps()">
+                            <i class="fas fa-directions"></i>
+                            Como Chegar
+                        </button>
+                        <button class="btn-acao" onclick="mostrarConfirmacao()">
+                            <i class="fas fa-heart"></i>
+                            Confirmar Presença
+                        </button>
+                        <button class="btn-acao btn-voltar" onclick="voltarAoInicio()">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="secao-confirmacao" id="secao-confirmacao" style="display: none;">
+                <div class="info-evento">
+                    <h3><i class="fas fa-heart"></i> Confirmar Presença</h3>
+                    <form class="form-confirmacao" id="form-confirmacao">
+                        <div class="form-group">
+                            <label for="nome">Nome Completo:</label>
+                            <input type="text" id="nome" name="nome" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="telefone">Telefone/WhatsApp:</label>
+                            <input type="tel" id="telefone" name="telefone">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Confirmação de Presença:</label>
+                            <div class="radio-group">
+                                <label class="radio-label-custom">
+                                    <input type="radio" name="confirmacao" value="sim" required>
+                                    <span class="radio-custom"></span>
+                                    <span class="radio-text">Sim, estarei presente! 🎉</span>
+                                </label>
+                                <label class="radio-label-custom">
+                                    <input type="radio" name="confirmacao" value="nao" required>
+                                    <span class="radio-custom"></span>
+                                    <span class="radio-text">Infelizmente não poderei comparecer 😢</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" id="acompanhantes-group" style="display: none;">
+                            <label for="acompanhantes">Número de acompanhantes:</label>
+                            <select id="acompanhantes" name="acompanhantes">
+                                <option value="0">Apenas eu</option>
+                                <option value="1">Eu + 1 pessoa</option>
+                                <option value="2">Eu + 2 pessoas</option>
+                                <option value="3">Eu + 3 pessoas</option>
+                                <option value="4">Eu + 4 pessoas</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="observacoes">Observações (opcional):</label>
+                            <textarea id="observacoes" name="observacoes" rows="3" 
+                                      placeholder="Alguma observação especial, restrição alimentar, etc."></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn-acao btn-destacado">
+                                <i class="fas fa-heart"></i>
+                                Confirmar Presença
+                            </button>
+                            <button type="button" class="btn-acao btn-secundario" onclick="mostrarPresentes()">
+                                <i class="fas fa-gift"></i>
+                                Ver Lista de Presentes
+                            </button>
+                            <button type="button" class="btn-acao btn-voltar" onclick="mostrarLocal()">
+                                <i class="fas fa-arrow-left"></i>
+                                Voltar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="secao-presentes" id="secao-presentes" style="display: none;">
+                <div class="info-evento">
+                    <h3><i class="fas fa-gift"></i> Lista de Presentes</h3>
+                    <p class="texto-presentes">
+                        Sua presença é o nosso maior presente, mas se desejar nos presentear, 
+                        fizemos uma lista especial na Amazon:
+                    </p>
+                    <div class="presentes-container" id="presentes-container">
+                        <!-- Presentes serão carregados dinamicamente -->
+                    </div>
+                    <div class="acoes-presentes">
+                        <button class="btn-acao" onclick="mostrarAgradecimentos()">
+                            <i class="fas fa-heart"></i>
+                            Mensagem Final
+                        </button>
+                        <button class="btn-acao btn-voltar" onclick="mostrarConfirmacao()">
+                            <i class="fas fa-arrow-left"></i>
+                            Voltar
                         </button>
                     </div>
                 </div>
@@ -214,11 +444,64 @@
 
 {% block scripts %}
 <script>
+// Variáveis globais
+let convidadoAtual = {% if convidado %}{{ {'id': convidado.id, 'nome': convidado.nome, 'whatsapp': convidado.whatsapp, 'codigo_convite': convidado.codigo_convite, 'status_resposta': convidado.status_resposta}|tojson }}{% else %}null{% endif %};
+let abrirMensagemFinal = {% if abrir_mensagem_final %}true{% else %}false{% endif %};
+
 // Configuração do Google Maps
 const coordenadas = {
     cerimonia: { lat: -23.5505, lng: -46.6333 }, // Coordenadas de exemplo - São Paulo
     recepcao: { lat: -23.5489, lng: -46.6388 }   // Coordenadas de exemplo - São Paulo
 };
+
+// Identificação de convidado
+document.addEventListener('DOMContentLoaded', function() {
+    const formIdentificacao = document.getElementById('form-identificacao');
+    if (formIdentificacao) {
+        formIdentificacao.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const identificador = document.getElementById('identificador').value.trim();
+            
+            if (!identificador) {
+                alert('Por favor, informe seu nome ou WhatsApp');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/identificar_convidado', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ identificador: identificador })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    if (result.ja_confirmou) {
+                        // Redirecionar para resumo
+                        window.location.href = `/resumo/${result.codigo}`;
+                    } else {
+                        // Redirecionar para convite personalizado
+                        window.location.href = `/?codigo=${result.codigo}`;
+                    }
+                } else {
+                    alert(result.message);
+                }
+            } catch (error) {
+                alert('Erro ao buscar convidado. Tente novamente.');
+            }
+        });
+    }
+});
+
+function continuarGenerico() {
+    // Esconder tela de identificação e mostrar convite genérico
+    document.getElementById('identificacao').style.display = 'none';
+    document.getElementById('envelope').style.display = 'block';
+}
 
 function initMap() {
     // Mapa da cerimônia
@@ -235,12 +518,31 @@ function initMap() {
 }
 
 // Funções de navegação
+function esconderTodasSecoes() {
+    // Esconder todas as seções
+    document.querySelectorAll('.secao-data, .secao-local, .secao-recepcao, .secao-confirmacao, .secao-presentes, .secao-agradecimentos').forEach(el => {
+        el.style.display = 'none';
+    });
+}
+
 function abrirConvite() {
     document.getElementById('envelope').style.display = 'none';
     document.getElementById('carta').style.display = 'block';
+    
+    // Se deve abrir direto na mensagem final (quem não comparecerá)
+    if (abrirMensagemFinal || (convidadoAtual && convidadoAtual.status_resposta === 'nao_comparecera')) {
+        esconderTodasSecoes();
+        document.getElementById('secao-agradecimentos').style.display = 'block';
+        document.getElementById('secao-agradecimentos').scrollIntoView({ behavior: 'smooth' });
+    } else {
+        // Mostrar apenas a primeira seção (data)
+        esconderTodasSecoes();
+        document.getElementById('secao-data').style.display = 'block';
+    }
 }
 
 function mostrarLocal() {
+    esconderTodasSecoes();
     document.getElementById('secao-local').style.display = 'block';
     document.getElementById('secao-local').scrollIntoView({ behavior: 'smooth' });
     // Inicializar o mapa após mostrar a seção
@@ -248,32 +550,33 @@ function mostrarLocal() {
 }
 
 function mostrarRecepcao() {
+    esconderTodasSecoes();
     document.getElementById('secao-recepcao').style.display = 'block';
     document.getElementById('secao-recepcao').scrollIntoView({ behavior: 'smooth' });
 }
 
 function mostrarConfirmacao() {
+    esconderTodasSecoes();
     document.getElementById('secao-confirmacao').style.display = 'block';
     document.getElementById('secao-confirmacao').scrollIntoView({ behavior: 'smooth' });
 }
 
 function mostrarPresentes() {
+    esconderTodasSecoes();
     document.getElementById('secao-presentes').style.display = 'block';
     document.getElementById('secao-presentes').scrollIntoView({ behavior: 'smooth' });
 }
 
 function mostrarAgradecimentos() {
+    esconderTodasSecoes();
     document.getElementById('secao-agradecimentos').style.display = 'block';
     document.getElementById('secao-agradecimentos').scrollIntoView({ behavior: 'smooth' });
 }
 
 function voltarAoInicio() {
-    // Esconder todas as seções
-    document.querySelectorAll('.secao-local, .secao-recepcao, .secao-confirmacao, .secao-presentes, .secao-agradecimentos').forEach(el => {
-        el.style.display = 'none';
-    });
-    
-    // Voltar para o topo
+    // Voltar para a primeira seção (data)
+    esconderTodasSecoes();
+    document.getElementById('secao-data').style.display = 'block';
     document.getElementById('secao-data').scrollIntoView({ behavior: 'smooth' });
 }
 
@@ -292,13 +595,14 @@ document.getElementById('form-confirmacao').addEventListener('submit', async fun
     e.preventDefault();
     
     const formData = new FormData(this);
+    const confirmouPresenca = formData.get('presenca') === 'true';
     const data = {
         nome: formData.get('nome'),
-        email: formData.get('email'),
         telefone: formData.get('telefone'),
-        confirmou_presenca: formData.get('presenca') === 'true',
+        confirmou_presenca: confirmouPresenca,
         acompanhantes: parseInt(formData.get('acompanhantes')),
-        observacoes: formData.get('observacoes')
+        observacoes: formData.get('observacoes'),
+        codigo_convite: convidadoAtual ? convidadoAtual.codigo_convite : null
     };
     
     try {
@@ -315,6 +619,22 @@ document.getElementById('form-confirmacao').addEventListener('submit', async fun
         if (result.success) {
             document.getElementById('modal-sucesso').style.display = 'block';
             this.reset();
+            // Após fechar o modal, verificar o tipo de resposta
+            setTimeout(() => {
+                document.getElementById('modal-sucesso').style.display = 'none';
+                if (confirmouPresenca && result.codigo) {
+                    // Se confirmou presença e tem código, ir para resumo
+                    window.location.href = `/resumo/${result.codigo}`;
+                } else if (!confirmouPresenca && result.codigo) {
+                    // Se não comparecerá e tem código, ir para mensagem final
+                    esconderTodasSecoes();
+                    document.getElementById('secao-agradecimentos').style.display = 'block';
+                    document.getElementById('secao-agradecimentos').scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    // Senão, ir para presentes
+                    mostrarPresentes();
+                }
+            }, 3000);
         } else {
             alert('Erro ao enviar confirmação: ' + result.message);
         }

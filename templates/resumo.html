@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="resumo-container">
+    <div class="resumo-header">
+        <div class="coracao-resumo">💕</div>
+        <h1 class="titulo-resumo">Samuel & Iara</h1>
+        <h2 class="subtitulo-resumo">Resumo do seu convite</h2>
+    </div>
+
+    <div class="resumo-content">
+        <!-- Saudação Personalizada -->
+        <div class="secao-resumo saudacao">
+            <div class="icone-secao"><i class="fas fa-user-check"></i></div>
+            <h3>Olá, {{ convidado.nome }}!</h3>
+            <p class="status-confirmacao">
+                {% if confirmacao and confirmacao.confirmou_presenca %}
+                <span class="status-confirmado">✅ Presença confirmada!</span>
+                {% else %}
+                <span class="status-nao-confirmado">❌ Presença não confirmada</span>
+                {% endif %}
+            </p>
+        </div>
+
+        <!-- Informações do Evento -->
+        <div class="secao-resumo evento-info">
+            <div class="icone-secao"><i class="fas fa-calendar-heart"></i></div>
+            <h3>Informações do Casamento</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <i class="fas fa-calendar-alt"></i>
+                    <div>
+                        <strong>Data:</strong><br>
+                        Sábado, 15 de Setembro de 2024
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-clock"></i>
+                    <div>
+                        <strong>Horário:</strong><br>
+                        18:00 horas
+                    </div>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-church"></i>
+                    <div>
+                        <strong>Local:</strong><br>
+                        Igreja São José<br>
+                        <small>Rua das Flores, 123 - Centro</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if confirmacao and confirmacao.confirmou_presenca %}
+        <!-- Detalhes da Confirmação -->
+        <div class="secao-resumo confirmacao-detalhes">
+            <div class="icone-secao"><i class="fas fa-check-circle"></i></div>
+            <h3>Sua Confirmação</h3>
+            <div class="detalhes-grid">
+                <div class="detalhe-item">
+                    <span class="label">Acompanhantes:</span>
+                    <span class="valor">{{ confirmacao.numero_acompanhantes }}</span>
+                </div>
+                <div class="detalhe-item">
+                    <span class="label">Confirmado em:</span>
+                    <span class="valor">{{ confirmacao.data_confirmacao.strftime('%d/%m/%Y às %H:%M') }}</span>
+                </div>
+                {% if confirmacao.observacoes %}
+                <div class="detalhe-item">
+                    <span class="label">Observações:</span>
+                    <span class="valor">{{ confirmacao.observacoes }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if presentes_selecionados %}
+        <!-- Presentes Selecionados -->
+        <div class="secao-resumo presentes-selecionados">
+            <div class="icone-secao"><i class="fas fa-gift"></i></div>
+            <h3>Presentes Selecionados</h3>
+            <div class="lista-presentes-selecionados">
+                {% for presente in presentes_selecionados %}
+                <div class="presente-selecionado">
+                    <div class="presente-nome">{{ presente.nome }}</div>
+                    <div class="presente-preco">R$ {{ "%.2f"|format(presente.preco) }}</div>
+                    <a href="{{ presente.link_amazon }}" target="_blank" class="btn-amazon-mini">
+                        <i class="fab fa-amazon"></i> Ver na Amazon
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Ações Rápidas -->
+        <div class="secao-resumo acoes-rapidas">
+            <div class="icone-secao"><i class="fas fa-hand-point-right"></i></div>
+            <h3>O que você pode fazer</h3>
+            <div class="botoes-acoes">
+                <a href="{{ url_for('lista_presentes') }}" class="btn-acao-resumo" target="_blank">
+                    <i class="fas fa-gift"></i>
+                    Ver Lista de Presentes
+                </a>
+                
+                <button class="btn-acao-resumo" onclick="abrirGoogleMaps()">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Como Chegar
+                </button>
+                
+                <a href="{{ url_for('convite', codigo=convidado.codigo_convite) }}" class="btn-acao-resumo">
+                    <i class="fas fa-envelope"></i>
+                    Ver Convite Completo
+                </a>
+                
+                {% if not confirmacao or not confirmacao.confirmou_presenca %}
+                <a href="{{ url_for('convite', codigo=convidado.codigo_convite) }}" class="btn-acao-resumo btn-confirmar-resumo">
+                    <i class="fas fa-heart"></i>
+                    Confirmar Presença
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Mensagem dos Noivos -->
+        <div class="secao-resumo mensagem-noivos">
+            <div class="icone-secao"><i class="fas fa-heart"></i></div>
+            <div class="mensagem-conteudo">
+                <p class="mensagem-texto">
+                    "Obrigado por fazer parte do nosso dia especial! 
+                    Esperamos celebrar este momento único ao seu lado."
+                </p>
+                <div class="assinatura-resumo">
+                    <strong>Com amor, Samuel & Iara</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Informações de Contato -->
+        <div class="secao-resumo contato-emergencia">
+            <div class="icone-secao"><i class="fas fa-phone"></i></div>
+            <h3>Contato para Dúvidas</h3>
+            <p>Se precisar de ajuda ou tiver alguma dúvida:</p>
+            <div class="contatos">
+                <div class="contato-item">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>(11) 99999-9999</span>
+                </div>
+                <div class="contato-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>casamento@samueleiarapara.com</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Compartilhamento -->
+<div id="modal-compartilhar" class="modal" style="display: none;">
+    <div class="modal-content">
+        <span class="close" onclick="fecharModalCompartilhar()">&times;</span>
+        <div class="modal-body">
+            <h3>Compartilhar Convite</h3>
+            <p>Copie o link abaixo para compartilhar seu convite personalizado:</p>
+            <div class="link-compartilhar">
+                <input type="text" id="link-convite" value="{{ url_for('convite', codigo=convidado.codigo_convite, _external=True) }}" readonly>
+                <button onclick="copiarLink()" class="btn-copiar">
+                    <i class="fas fa-copy"></i> Copiar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Configuração do Google Maps
+const coordenadas = {
+    cerimonia: { lat: -23.5505, lng: -46.6333 }
+};
+
+function abrirGoogleMaps() {
+    const url = `https://maps.google.com/?q=${coordenadas.cerimonia.lat},${coordenadas.cerimonia.lng}`;
+    window.open(url, '_blank');
+}
+
+function mostrarModalCompartilhar() {
+    document.getElementById('modal-compartilhar').style.display = 'block';
+}
+
+function fecharModalCompartilhar() {
+    document.getElementById('modal-compartilhar').style.display = 'none';
+}
+
+function copiarLink() {
+    const input = document.getElementById('link-convite');
+    input.select();
+    document.execCommand('copy');
+    alert('Link copiado para a área de transferência!');
+}
+
+// Fechar modal clicando fora dele
+window.onclick = function(event) {
+    const modal = document.getElementById('modal-compartilhar');
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+}
+</script>
+{% endblock %}

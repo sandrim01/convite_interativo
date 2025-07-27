@@ -1,143 +1,112 @@
-# Convite Interativo de Casamento
+# 💕 Convite Interativo de Casamento
 
 Um convite de casamento interativo e elegante desenvolvido com Flask, que proporciona uma experiência única aos convidados.
 
 ## 🌟 Características
 
-- **Convite em formato de carta interativa** - Os convidados clicam e navegam através do convite
-- **Integração com Google Maps** - Localização da cerimônia e recepção
-- **Lista de presentes da Amazon** - Links diretos para produtos
+- **Convites personalizados** - Links únicos para cada convidado
 - **Confirmação de presença** - Sistema completo de RSVP
-- **Painel administrativo** - Gerenciamento de presentes e confirmações
-- **Design responsivo** - Funciona perfeitamente em dispositivos móveis
-- **Banco de dados PostgreSQL** - Armazenamento seguro dos dados
+- **Lista de presentes** - Links diretos para produtos da Amazon
+- **Envio por WhatsApp** - Sistema de envio em massa
+- **Painel administrativo** - Gerenciamento completo
+- **Design responsivo** - Funciona em todos os dispositivos
+- **Banco PostgreSQL** - Dados seguros na nuvem
 
-## 🚀 Tecnologias Utilizadas
+## 🚀 Tecnologias
 
 - **Backend**: Python/Flask
-- **Banco de dados**: PostgreSQL
+- **Banco**: PostgreSQL (Railway)
 - **Frontend**: HTML5, CSS3, JavaScript
-- **Deploy**: Railway
-- **Mapas**: Google Maps API
-- **Presentes**: Links da Amazon
+- **Deploy**: Railway Platform
 
-## 📋 Funcionalidades
+## � Funcionalidades
 
 ### Para os Convidados:
-- Visualização do convite em formato de carta interativa
-- Confirmação de presença online
-- Visualização da localização no Google Maps
-- Acesso à lista de presentes da Amazon
-- Interface intuitiva e elegante
+- Convite personalizado com nome pré-preenchido
+- Confirmação de presença simples
+- Lista de presentes interativa
+- Interface elegante e intuitiva
 
-### Para os Noivos (Painel Admin):
-- Gerenciamento da lista de presentes
-- Visualização das confirmações de presença
-- Adição/remoção de itens da lista
-- Estatísticas dos convidados
+### Para os Noivos:
+- Cadastro de convidados
+- Envio automático por WhatsApp
+- Gerenciamento de confirmações
+- Controle da lista de presentes
+- Relatórios em tempo real
 
-## 🛠️ Instalação e Configuração
+## 🛠️ Como Usar
 
-### Pré-requisitos
-- Python 3.8+
-- PostgreSQL
-- Conta no Google Cloud (para Maps API)
-- Conta na Railway (para deploy)
+### 1. Acesso ao Sistema
+- **URL Principal**: Seu domínio na Railway
+- **Painel Admin**: `/admin` (senha: configurada no .env)
 
-### Instalação Local
+### 2. Cadastrar Convidados
+1. Acesse o painel administrativo
+2. Vá para "Cadastro de Convidados"
+3. Adicione nome e WhatsApp
+4. O sistema gera link único automaticamente
 
-1. Clone o repositório:
-```bash
-git clone https://github.com/sandrim01/convite_interativo.git
-cd convite_interativo
-```
+### 3. Enviar Convites
+1. Na seção "WhatsApp" do painel admin
+2. Clique em "Gerar Links para WhatsApp"
+3. Envie as mensagens personalizadas
+4. Marque como enviado conforme necessário
 
-2. Crie um ambiente virtual:
-```bash
-python -m venv venv
-source venv/bin/activate  # No Windows: venv\Scripts\activate
-```
+### 4. Acompanhar Respostas
+- Todas as confirmações aparecem no painel
+- Status automático: pendente → enviado → confirmado/recusado
+- Relatórios em tempo real
 
-3. Instale as dependências:
-```bash
-pip install -r requirements.txt
-```
-
-4. Configure as variáveis de ambiente no arquivo `.env`:
+## ⚙️ Configuração (.env)
 ```env
-DATABASE_URL=postgresql://postgres:pmQzCzKBhjuLMJvLBUGZkuYwkVoCOtCq@crossover.proxy.rlwy.net:14871/railway
-SECRET_KEY=sua-chave-secreta-aqui
-FLASK_ENV=development
-GOOGLE_MAPS_API_KEY=sua-chave-do-google-maps-aqui
+DATABASE_URL=postgresql://seu-banco-postgresql
+SECRET_KEY=sua-chave-secreta
+ADMIN_PASSWORD=sua-senha-admin
 ```
 
-5. Execute a aplicação:
-```bash
-python app.py
-```
-
-A aplicação estará disponível em `http://localhost:5000`
-
-## 🌐 Deploy na Railway
+## 🚀 Deploy na Railway
 
 1. Conecte seu repositório GitHub à Railway
-2. Configure as variáveis de ambiente na Railway
-3. O deploy será feito automaticamente
+2. Configure as variáveis de ambiente
+3. Deploy automático via Git push
 
-## 📱 Como Usar
-
-### Configuração Inicial:
-1. Acesse `/admin` para gerenciar presentes e confirmações
-2. Adicione presentes com links da Amazon
-3. Configure as coordenadas dos locais no código
-4. Obtenha uma chave do Google Maps API
-
-### Personalizações:
-- Altere os nomes dos noivos no arquivo `convite.html`
-- Modifique as datas e locais conforme necessário
-- Adicione sua chave do Google Maps
-- Personalize cores e estilos no arquivo CSS
-
-## 🎨 Estrutura do Projeto
+## 📂 Estrutura do Projeto
 
 ```
 convite_interativo/
-├── app.py                 # Aplicação Flask principal
-├── requirements.txt       # Dependências Python
-├── Procfile              # Configuração Railway
-├── .env                  # Variáveis de ambiente
-├── templates/            # Templates HTML
-│   ├── base.html
-│   ├── convite.html
-│   ├── lista_presentes.html
-│   └── admin.html
-└── static/               # Arquivos estáticos
+├── app.py              # Aplicação Flask principal
+├── requirements.txt    # Dependências Python
+├── Procfile           # Configuração Railway
+├── .env               # Variáveis de ambiente
+├── templates/         # Templates HTML
+│   ├── convite.html   # Página principal do convite
+│   ├── admin.html     # Painel administrativo
+│   └── ...
+└── static/            # CSS e JavaScript
     ├── css/
-    │   └── style.css
     └── js/
-        └── script.js
 ```
 
-## 🔧 Customização
+## 🎯 Status do Projeto
 
-### Alterando Informações do Casamento:
-1. Edite `templates/convite.html` para alterar nomes, datas e locais
-2. Atualize as coordenadas no JavaScript para os locais corretos
-3. Modifique as cores e estilos em `static/css/style.css`
+✅ **Funcional e em Produção**
+- Sistema completo de convites personalizados
+- Envio automático por WhatsApp
+- Confirmações em tempo real
+- Painel administrativo completo
+- Deploy na Railway configurado
 
-### Adicionando Presentes:
-1. Acesse `/admin` 
-2. Use o formulário para adicionar novos presentes
-3. Insira links válidos da Amazon
+## 📋 Próximos Passos (Opcional)
 
-## 🔐 Segurança
+- [ ] Integração com Google Maps
+- [ ] Galeria de fotos
+- [ ] Sistema de presentes com pagamento
+- [ ] Notificações por email
+- [ ] App mobile
 
-- Variáveis sensíveis em arquivo `.env`
-- Validação de formulários no frontend e backend
-- Sanitização de dados de entrada
-- HTTPS em produção (Railway)
+---
 
-## 📞 Suporte
+💕 **Desenvolvido com amor para tornar seu casamento ainda mais especial!** �
 
 Para dúvidas ou problemas, abra uma issue no GitHub.
 
