@@ -27,6 +27,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = database_url or 'sqlite:///convite.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'chave-secreta-para-desenvolvimento')
 
+# Configuração de sessão mais robusta para produção
+app.config['SESSION_COOKIE_SECURE'] = False  # Manter False para HTTP local
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['PERMANENT_SESSION_LIFETIME'] = 86400  # 24 horas
+
 # Senha do administrador (em produção, use variável de ambiente)
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD', 'casamento2024')  # Altere esta senha!
 
@@ -286,20 +292,51 @@ def health_check():
         'database': 'connected' if database_url else 'sqlite'
     })
 
+@app.route('/debug_auth')
+def debug_auth():
+    """Debug da autenticação e configuração"""
+    try:
+        return jsonify({
+            'status': 'ok',
+            'session_logged_in': session.get('admin_logged_in', False),
+            'admin_password_configured': bool(ADMIN_PASSWORD),
+            'admin_password_length': len(ADMIN_PASSWORD) if ADMIN_PASSWORD else 0,
+            'secret_key_configured': bool(app.config.get('SECRET_KEY')),
+            'secret_key_length': len(app.config.get('SECRET_KEY', '')) if app.config.get('SECRET_KEY') else 0,
+            'session_config': {
+                'cookie_secure': app.config.get('SESSION_COOKIE_SECURE'),
+                'cookie_httponly': app.config.get('SESSION_COOKIE_HTTPONLY'),
+                'cookie_samesite': app.config.get('SESSION_COOKIE_SAMESITE')
+            }
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
     """Página de login do administrador"""
-    if request.method == 'POST':
-        senha = request.form.get('senha')
+    try:
+        if request.method == 'POST':
+            senha = request.form.get('senha')
+            app.logger.info(f"Tentativa de login com senha: {'[FORNECIDA]' if senha else '[VAZIA]'}")
+            app.logger.info(f"Senha esperada configurada: {'SIM' if ADMIN_PASSWORD else 'NÃO'}")
+            
+            if senha == ADMIN_PASSWORD:
+                session['admin_logged_in'] = True
+                session.permanent = True
+                app.logger.info("Login realizado com sucesso!")
+                flash('Login realizado com sucesso!', 'success')
+                return redirect(url_for('admin'))
+            else:
+                app.logger.warning("Senha incorreta fornecida")
+                flash('Senha incorreta. Tente novamente.', 'error')
         
-        if senha == ADMIN_PASSWORD:
-            session['admin_logged_in'] = True
-            flash('Login realizado com sucesso!', 'success')
-            return redirect(url_for('admin'))
-        else:
-            flash('Senha incorreta. Tente novamente.', 'error')
-    
-    return render_template('admin_login.html')
+        return render_template('admin_login.html')
+        
+    except Exception as e:
+        app.logger.error(f"Erro na rota de login: {str(e)}")
+        flash('Erro interno no sistema de login', 'error')
+        return render_template('admin_login.html')
 
 @app.route('/admin-logout')
 def admin_logout():
@@ -308,17 +345,50 @@ def admin_logout():
     flash('Logout realizado com sucesso!', 'success')
     return redirect(url_for('convite'))
 
+@app.route('/login_direto')
+def login_direto():
+    """Login direto com senha padrão para debug"""
+    try:
+        # Usar senha padrão para debug
+        senha_debug = 'casamento2024'
+        if senha_debug == ADMIN_PASSWORD:
+            session['admin_logged_in'] = True
+            session.permanent = True
+            return jsonify({
+                'success': True,
+                'message': 'Login direto realizado com sucesso!',
+                'redirect_url': url_for('admin', _external=True)
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': f'Senha não confere. Esperada: {len(ADMIN_PASSWORD)} chars, configurada: {bool(ADMIN_PASSWORD)}'
+            })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Erro no login direto: {str(e)}'
+        })
+
 @app.route('/admin')
 @login_required
 def admin():
     """Página administrativa para gerenciar presentes"""
-    presentes = Presente.query.all()
-    confirmacoes = Confirmacao.query.all()
-    presentes_selecionados = Presente.query.filter(Presente.selecionado_por.isnot(None)).all()
-    return render_template('admin.html', 
-                         presentes=presentes, 
-                         confirmacoes=confirmacoes,
-                         presentes_selecionados=presentes_selecionados)
+    try:
+        app.logger.info("Acessando painel admin - usuário autenticado")
+        presentes = Presente.query.all()
+        confirmacoes = Confirmacao.query.all()
+        presentes_selecionados = Presente.query.filter(Presente.selecionado_por.isnot(None)).all()
+        
+        app.logger.info(f"Dados carregados: {len(presentes)} presentes, {len(confirmacoes)} confirmações")
+        
+        return render_template('admin.html', 
+                             presentes=presentes, 
+                             confirmacoes=confirmacoes,
+                             presentes_selecionados=presentes_selecionados)
+    except Exception as e:
+        app.logger.error(f"Erro no painel admin: {str(e)}")
+        return f"Erro no painel admin: {str(e)}"
 
 @app.route('/api/confirmar-presenca', methods=['POST'])
 def confirmar_presenca():
