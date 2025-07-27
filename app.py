@@ -709,43 +709,60 @@ def excluir_convidado(convidado_id):
 
 def init_db():
     """Inicializa o banco de dados com dados de exemplo"""
-    with app.app_context():
-        db.create_all()
-        
-        # Verifica se já existem presentes cadastrados
-        if Presente.query.count() == 0:
-            # Adiciona alguns presentes de exemplo
-            presentes_exemplo = [
-                {
-                    'nome': 'Jogo de Panelas Antiaderente',
-                    'descricao': 'Set completo com 5 panelas antiaderentes',
-                    'preco': 299.90,
-                    'link_amazon': 'https://amazon.com.br/dp/exemplo1',
-                    'categoria': 'Cozinha'
-                },
-                {
-                    'nome': 'Conjunto de Taças de Cristal',
-                    'descricao': 'Set com 6 taças de cristal para vinho',
-                    'preco': 189.90,
-                    'link_amazon': 'https://amazon.com.br/dp/exemplo2',
-                    'categoria': 'Mesa e Bar'
-                },
-                {
-                    'nome': 'Aspirador de Pó Robô',
-                    'descricao': 'Aspirador inteligente com conexão WiFi',
-                    'preco': 899.90,
-                    'link_amazon': 'https://amazon.com.br/dp/exemplo3',
-                    'categoria': 'Eletrodomésticos'
-                }
-            ]
+    try:
+        with app.app_context():
+            print("Criando tabelas...")
+            db.create_all()
+            print("Tabelas criadas com sucesso!")
             
-            for presente_data in presentes_exemplo:
-                presente = Presente(**presente_data)
-                db.session.add(presente)
-            
-            db.session.commit()
-            print("Banco de dados inicializado com dados de exemplo!")
+            # Verifica se já existem presentes cadastrados
+            if Presente.query.count() == 0:
+                print("Adicionando presentes de exemplo...")
+                # Adiciona alguns presentes de exemplo
+                presentes_exemplo = [
+                    {
+                        'nome': 'Jogo de Panelas Antiaderente',
+                        'descricao': 'Set completo com 5 panelas antiaderentes',
+                        'preco': 299.90,
+                        'link_amazon': 'https://amazon.com.br/dp/exemplo1',
+                        'categoria': 'Cozinha'
+                    },
+                    {
+                        'nome': 'Conjunto de Taças de Cristal',
+                        'descricao': 'Set com 6 taças de cristal para vinho',
+                        'preco': 189.90,
+                        'link_amazon': 'https://amazon.com.br/dp/exemplo2',
+                        'categoria': 'Mesa e Bar'
+                    },
+                    {
+                        'nome': 'Aspirador de Pó Robô',
+                        'descricao': 'Aspirador inteligente com conexão WiFi',
+                        'preco': 899.90,
+                        'link_amazon': 'https://amazon.com.br/dp/exemplo3',
+                        'categoria': 'Eletrodomésticos'
+                    }
+                ]
+                
+                for presente_data in presentes_exemplo:
+                    presente = Presente(**presente_data)
+                    db.session.add(presente)
+                
+                db.session.commit()
+                print("Banco de dados inicializado com dados de exemplo!")
+            else:
+                print("Banco já possui dados, pulando inicialização.")
+                
+    except Exception as e:
+        print(f"Erro ao inicializar banco de dados: {e}")
+        import traceback
+        traceback.print_exc()
+        # Em produção, não falhar se houver erro na inicialização
+        pass
 
 if __name__ == '__main__':
     init_db()
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    # Em produção, o gunicorn gerencia a aplicação
+    # Em desenvolvimento, rodamos com debug
+    port = int(os.getenv('PORT', 5000))
+    debug = os.getenv('FLASK_ENV') == 'development'
+    app.run(debug=debug, host='0.0.0.0', port=port)
