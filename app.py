@@ -23,6 +23,13 @@ database_url = os.getenv('DATABASE_URL')
 if database_url and database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
 
+# Debug: verificar qual banco está sendo usado
+print(f"DATABASE_URL detectada: {'SIM' if database_url else 'NÃO'}")
+if database_url:
+    print(f"Tipo de banco: {'PostgreSQL' if 'postgresql://' in database_url else 'Outro'}")
+else:
+    print("Usando SQLite local")
+
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url or 'sqlite:///convite.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'chave-secreta-para-desenvolvimento')
@@ -268,20 +275,97 @@ def presentes():
 def test_db():
     """Rota para testar a conexão com o banco"""
     try:
+        # Tentar criar as tabelas
         db.create_all()
-        count = Presente.query.count()
-        return f"Conexão OK! Total de presentes: {count}"
+        
+        # Testar cada tabela
+        results = {}
+        
+        try:
+            count = Presente.query.count()
+            results['presente'] = f"✅ OK - {count} registros"
+        except Exception as e:
+            results['presente'] = f"❌ ERRO - {str(e)}"
+        
+        try:
+            count = Confirmacao.query.count()
+            results['confirmacao'] = f"✅ OK - {count} registros"
+        except Exception as e:
+            results['confirmacao'] = f"❌ ERRO - {str(e)}"
+            
+        try:
+            count = Convidado.query.count()
+            results['convidado'] = f"✅ OK - {count} registros"
+        except Exception as e:
+            results['convidado'] = f"❌ ERRO - {str(e)}"
+        
+        # Verificar engine do banco
+        db_engine = str(db.engine.url).split('://')[0]
+        
+        return f"""
+        <h1>🔍 Teste de Conexão do Banco</h1>
+        <p><strong>Engine:</strong> {db_engine}</p>
+        <p><strong>URL:</strong> {str(db.engine.url).split('@')[0]}@***</p>
+        <h2>Status das Tabelas:</h2>
+        <ul>
+            <li><strong>Presente:</strong> {results.get('presente', 'N/A')}</li>
+            <li><strong>Confirmação:</strong> {results.get('confirmacao', 'N/A')}</li>
+            <li><strong>Convidado:</strong> {results.get('convidado', 'N/A')}</li>
+        </ul>
+        <p><a href="/init_database">🔄 Reinicializar Banco</a></p>
+        <p><a href="/admin">👤 Ir para Admin</a></p>
+        """
     except Exception as e:
-        return f"Erro na conexão: {str(e)}"
+        return f"""
+        <h1>❌ Erro na Conexão</h1>
+        <p><strong>Erro:</strong> {str(e)}</p>
+        <p><a href="/init_database">🔄 Tentar Inicializar Banco</a></p>
+        """
 
 @app.route('/init_database')
 def init_database():
     """Rota para inicializar o banco de dados manualmente"""
     try:
+        # Forçar criação das tabelas
+        with app.app_context():
+            db.drop_all()  # Remove tabelas existentes
+            db.create_all()  # Recria todas as tabelas
+            
+            # Verificar se as tabelas foram criadas
+            tables_created = []
+            try:
+                Presente.query.count()
+                tables_created.append('presente')
+            except:
+                pass
+            
+            try:
+                Confirmacao.query.count()
+                tables_created.append('confirmacao')
+            except:
+                pass
+                
+            try:
+                Convidado.query.count()
+                tables_created.append('convidado')
+            except:
+                pass
+        
+        # Inicializar dados
         init_db()
-        return "Banco de dados inicializado com sucesso!"
+        
+        return f"""
+        <h1>✅ Banco de dados inicializado com sucesso!</h1>
+        <p><strong>Tabelas criadas:</strong> {', '.join(tables_created) if tables_created else 'Nenhuma'}</p>
+        <p><a href="/admin">Ir para o painel administrativo</a></p>
+        <p><a href="/test_db">Testar conexão do banco</a></p>
+        """
     except Exception as e:
-        return f"Erro ao inicializar banco: {str(e)}"
+        return f"""
+        <h1>❌ Erro ao inicializar banco</h1>
+        <p><strong>Erro:</strong> {str(e)}</p>
+        <p><a href="/test_db">Testar conexão do banco</a></p>
+        """
 
 @app.route('/health')
 def health_check():
@@ -365,17 +449,67 @@ def login_direto():
                 'message': f'Senha não confere. Esperada: {len(ADMIN_PASSWORD)} chars, configurada: {bool(ADMIN_PASSWORD)}'
             })
     except Exception as e:
+            return jsonify({
+                'success': False,
+                'message': f'Erro no login direto: {str(e)}'
+            })
+
+@app.route('/force_init')
+def force_init():
+    """Força inicialização completa do banco - use apenas se necessário"""
+    try:
+        with app.app_context():
+            # Verificar tipo de banco
+            db_type = 'SQLite' if 'sqlite' in str(db.engine.url) else 'PostgreSQL'
+            
+            # Forçar recriação completa
+            db.drop_all()
+            db.create_all()
+            
+            # Verificar tabelas criadas
+            tables = db.engine.table_names()
+            
+            # Inicializar dados
+            init_db()
+            
+            # Contar registros
+            presente_count = Presente.query.count()
+            
+            return jsonify({
+                'success': True,
+                'message': 'Banco inicializado com sucesso!',
+                'database_type': db_type,
+                'tables_created': tables,
+                'presentes_added': presente_count,
+                'next_step': 'Acesse /admin para usar o painel'
+            })
+            
+    except Exception as e:
         return jsonify({
             'success': False,
-            'message': f'Erro no login direto: {str(e)}'
-        })
-
-@app.route('/admin')
+            'error': str(e),
+            'suggestion': 'Verifique se o banco PostgreSQL está funcionando na Railway'
+        })@app.route('/admin')
 @login_required
 def admin():
     """Página administrativa para gerenciar presentes"""
     try:
         app.logger.info("Acessando painel admin - usuário autenticado")
+        
+        # Verificar se estamos usando PostgreSQL ou SQLite
+        using_postgres = 'postgresql://' in str(db.engine.url)
+        app.logger.info(f"Usando banco: {'PostgreSQL' if using_postgres else 'SQLite'}")
+        
+        # Se for PostgreSQL (Railway), não tentar criar tabelas - já existem
+        if not using_postgres:
+            # Apenas para SQLite local, garantir que as tabelas existam
+            try:
+                db.create_all()
+                app.logger.info("Tabelas SQLite verificadas/criadas")
+            except Exception as table_error:
+                app.logger.error(f"Erro ao criar tabelas SQLite: {table_error}")
+        
+        # Carregar dados para o painel
         presentes = Presente.query.all()
         confirmacoes = Confirmacao.query.all()
         presentes_selecionados = Presente.query.filter(Presente.selecionado_por.isnot(None)).all()
@@ -388,7 +522,7 @@ def admin():
                              presentes_selecionados=presentes_selecionados)
     except Exception as e:
         app.logger.error(f"Erro no painel admin: {str(e)}")
-        return f"Erro no painel admin: {str(e)}"
+        return f"Erro no painel admin: {str(e)}. Usando banco: {str(db.engine.url).split('@')[0]}@***"
 
 @app.route('/api/confirmar-presenca', methods=['POST'])
 def confirmar_presenca():
