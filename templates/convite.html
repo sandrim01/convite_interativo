@@ -450,8 +450,8 @@ let abrirMensagemFinal = {% if abrir_mensagem_final %}true{% else %}false{% endi
 
 // Configuração do Google Maps
 const coordenadas = {
-    cerimonia: { lat: -23.5505, lng: -46.6333 }, // Coordenadas de exemplo - São Paulo
-    recepcao: { lat: -23.5489, lng: -46.6388 }   // Coordenadas de exemplo - São Paulo
+    cerimonia: { lat: -23.5330, lng: -46.6396 }, // Igreja São José - São Paulo/SP
+    recepcao: { lat: -23.5320, lng: -46.6380 }   // Local próximo para recepção
 };
 
 // Identificação de convidado
@@ -504,17 +504,22 @@ function continuarGenerico() {
 }
 
 function initMap() {
-    // Mapa da cerimônia
-    const map = new google.maps.Map(document.getElementById("mapa"), {
-        zoom: 15,
-        center: coordenadas.cerimonia,
-    });
-    
-    const marker = new google.maps.Marker({
-        position: coordenadas.cerimonia,
-        map: map,
-        title: "Igreja São José"
-    });
+    // Criar mapa usando iframe do Google Maps
+    const mapContainer = document.getElementById("mapa");
+    if (mapContainer) {
+        mapContainer.innerHTML = `
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3657.1!2d-46.6396!3d-23.5330!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjPCsDMxJzU4LjgiUyA0NsKwMzgnMjIuNiJX!5e0!3m2!1spt-BR!2sbr!4v1600000000000!5m2!1spt-BR!2sbr" 
+                width="100%" 
+                height="300" 
+                style="border:0; border-radius: 10px;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+        `;
+        mapContainer.style.display = "block";
+    }
 }
 
 // Funções de navegação
