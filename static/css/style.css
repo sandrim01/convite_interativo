@@ -40,104 +40,285 @@ body {
     padding: 20px;
 }
 
-/* Envelope */
-.carta-envelope {
-    width: 400px;
-    height: 300px;
-    background: linear-gradient(145deg, var(--cor-principal), var(--cor-secundaria), #E8B4B8);
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 15px 35px rgba(139, 21, 56, 0.3);
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    animation: envelopePulse 3s ease-in-out infinite;
+/* Envelope de Carta Elegante */
+.envelope-carta {
+    width: 450px;
+    height: 320px;
+    perspective: 1000px;
+    margin: 0 auto;
     position: relative;
+    cursor: pointer;
+    transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.envelope-body {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+}
+
+.envelope-front {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #f8f4f0 0%, #ede3d3 50%, #e8dcc0 100%);
+    border: 2px solid #d4a574;
+    border-radius: 8px;
+    position: relative;
+    box-shadow: 
+        0 15px 35px rgba(139, 21, 56, 0.2),
+        0 5px 15px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
     overflow: hidden;
 }
 
-/* Efeito de brilho no envelope */
-.carta-envelope::before {
+/* Aba do envelope */
+.envelope-flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    border-left: 225px solid transparent;
+    border-right: 225px solid transparent;
+    border-top: 120px solid #8B1538;
+    z-index: 10;
+    box-shadow: 0 3px 8px rgba(139, 21, 56, 0.3);
+}
+
+.envelope-flap::before {
     content: '';
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-        45deg,
-        transparent,
-        rgba(255, 255, 255, 0.1),
-        transparent
-    );
-    animation: envelopeShine 4s ease-in-out infinite;
+    top: -118px;
+    left: -223px;
+    right: -223px;
+    height: 2px;
+    background: linear-gradient(45deg, transparent 25%, rgba(255, 255, 255, 0.3) 50%, transparent 75%);
 }
 
-@keyframes envelopeShine {
-    0% { transform: rotate(0deg) translate(-50%, -50%); }
-    100% { transform: rotate(360deg) translate(-50%, -50%); }
+/* Endereçamento */
+.envelope-address {
+    position: absolute;
+    top: 140px;
+    left: 40px;
+    right: 40px;
+    bottom: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
-@keyframes envelopePulse {
-    0%, 100% { 
-        box-shadow: 
-            0 15px 35px rgba(139, 21, 56, 0.3),
-            0 0 0 0 rgba(200, 90, 110, 0.4);
-        transform: scale(1);
-    }
-    50% { 
-        box-shadow: 
-            0 20px 40px rgba(200, 90, 110, 0.5),
-            0 0 30px rgba(200, 90, 110, 0.3),
-            0 0 0 10px rgba(200, 90, 110, 0.1);
-        transform: scale(1.02);
-    }
-}
-
-.carta-envelope:hover {
-    transform: translateY(-10px) scale(1.08) rotateY(5deg);
-    box-shadow: 
-        0 30px 60px rgba(200, 90, 110, 0.6),
-        0 0 50px rgba(200, 90, 110, 0.4),
-        0 0 0 15px rgba(200, 90, 110, 0.2);
-    filter: brightness(1.1);
-    animation: envelopeHoverPulse 0.8s ease-in-out infinite alternate;
-}
-
-@keyframes envelopeHoverPulse {
-    0% { 
-        box-shadow: 
-            0 30px 60px rgba(200, 90, 110, 0.6),
-            0 0 50px rgba(200, 90, 110, 0.4),
-            0 0 0 15px rgba(200, 90, 110, 0.2);
-    }
-    100% { 
-        box-shadow: 
-            0 35px 70px rgba(200, 90, 110, 0.8),
-            0 0 60px rgba(200, 90, 110, 0.6),
-            0 0 0 20px rgba(200, 90, 110, 0.3);
-    }
-}
-
-.envelope-content {
-    text-align: center;
-    color: white;
-    padding: 20px;
-}
-
-.nomes-noivos {
-    font-family: 'Dancing Script', cursive;
-    font-size: 2.2em;
-    font-weight: 700;
-    margin-bottom: 10px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-.texto-convite {
-    font-size: 1.1em;
+.destinatario {
     margin-bottom: 20px;
-    opacity: 0.9;
+}
+
+.para {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9em;
+    color: #8B1538;
+    margin: 0 0 5px 0;
+    font-style: italic;
+}
+
+.nome-destinatario {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.8em;
+    font-weight: 600;
+    color: #2C3E50;
+    margin: 0;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.remetente {
+    text-align: right;
+}
+
+.de {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.8em;
+    color: #8B1538;
+    margin: 0 0 3px 0;
+    font-style: italic;
+}
+
+.nomes-remetentes {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.4em;
+    font-weight: 600;
+    color: #2C3E50;
+    margin: 0 0 2px 0;
+}
+
+.ocasiao {
+    font-family: 'Playfair Display', serif;
+    font-size: 0.9em;
+    color: #8B1538;
+    margin: 0;
+    font-style: italic;
+}
+
+/* Lacre de cera */
+.lacre-cera {
+    position: absolute;
+    top: 80px;
+    right: 60px;
+    width: 60px;
+    height: 60px;
+    z-index: 15;
+}
+
+.cera-seal {
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, #8B1538 0%, #6d1028 70%, #5a0d20 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 
+        0 3px 10px rgba(139, 21, 56, 0.6),
+        inset 0 2px 4px rgba(255, 255, 255, 0.2),
+        inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.cera-seal::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 70%;
+    height: 70%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.cera-seal i {
+    color: #f8f4f0;
+    font-size: 1.5em;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    z-index: 1;
+}
+
+/* Selo postal */
+.selo-postal {
+    position: absolute;
+    top: 140px;
+    right: 20px;
+    width: 50px;
+    height: 60px;
+    background: linear-gradient(135deg, #D4A574 0%, #c49660 100%);
+    border: 2px solid #8B1538;
+    border-radius: 3px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.selo-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #8B1538;
+}
+
+.selo-content i {
+    font-size: 1.2em;
+    margin-bottom: 3px;
+}
+
+.selo-text {
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+/* Botão de ação */
+.envelope-action {
+    position: absolute;
+    bottom: -80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+}
+
+.btn-abrir-envelope {
+    background: linear-gradient(135deg, var(--cor-principal) 0%, #a01d3a 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 50px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 
+        0 8px 25px rgba(139, 21, 56, 0.3),
+        0 0 0 0 rgba(139, 21, 56, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 auto;
+    min-width: 200px;
+}
+
+.btn-abrir-envelope:hover {
+    transform: translateY(-3px);
+    box-shadow: 
+        0 15px 35px rgba(139, 21, 56, 0.4),
+        0 0 30px rgba(139, 21, 56, 0.2);
+    background: linear-gradient(135deg, #a01d3a 0%, var(--cor-principal) 100%);
+}
+
+.btn-abrir-envelope:active {
+    transform: translateY(-1px);
+}
+
+/* Animações para o envelope */
+.envelope-carta:hover {
+    transform: translateY(-10px) rotateY(5deg);
+}
+
+.envelope-carta:hover .envelope-body {
+    transform: rotateX(5deg);
+}
+
+.envelope-carta:hover .lacre-cera {
+    animation: sealGlow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes sealGlow {
+    0% {
+        filter: brightness(1);
+    }
+    100% {
+        filter: brightness(1.3) drop-shadow(0 0 10px rgba(139, 21, 56, 0.6));
+    }
+}
+
+/* Animação de entrada */
+.envelope-carta {
+    animation: envelopeEntrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+}
+
+@keyframes envelopeEntrance {
+    0% {
+        opacity: 0;
+        transform: translateY(100px) rotateX(-90deg);
+    }
+    50% {
+        opacity: 0.8;
+        transform: translateY(-20px) rotateX(10deg);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) rotateX(0deg);
+    }
 }
 
 /* Carta */
@@ -1328,14 +1509,57 @@ body {
         padding: 10px;
     }
     
-    .carta-envelope {
+    .envelope-carta {
         width: 90%;
-        max-width: 350px;
-        height: 250px;
+        max-width: 380px;
+        height: 280px;
     }
     
-    .nomes-noivos {
-        font-size: 1.8em;
+    .envelope-address {
+        top: 120px;
+        left: 30px;
+        right: 30px;
+        bottom: 50px;
+    }
+    
+    .nome-destinatario {
+        font-size: 1.5em;
+    }
+    
+    .nomes-remetentes {
+        font-size: 1.2em;
+    }
+    
+    .lacre-cera {
+        width: 50px;
+        height: 50px;
+        top: 70px;
+        right: 50px;
+    }
+    
+    .cera-seal i {
+        font-size: 1.2em;
+    }
+    
+    .selo-postal {
+        width: 40px;
+        height: 50px;
+        top: 130px;
+        right: 15px;
+    }
+    
+    .selo-content i {
+        font-size: 1em;
+    }
+    
+    .btn-abrir-envelope {
+        padding: 12px 25px;
+        font-size: 1em;
+        min-width: 180px;
+    }
+    
+    .envelope-action {
+        bottom: -70px;
     }
     
     .carta-content {

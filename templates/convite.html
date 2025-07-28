@@ -44,18 +44,48 @@
     
     <!-- Convite Personalizado (quando há convidado válido) -->
     <div class="convite-personalizado">
-        <!-- Capa do Convite -->
-        <div class="carta-envelope" id="envelope">
-            <div class="envelope-front">
-                <div class="envelope-content">
-                    <h1 class="nomes-noivos">Samuel & Iara</h1>
-                    <p class="texto-convite-personalizado">
-                        <span class="nome-convidado">{{ convidado.nome }}</span>,<br>
-                        Convidamos você para celebrar nosso amor
-                    </p>
-                    <button class="btn-abrir btn-destacado" onclick="abrirConvite()">
+        <!-- Envelope de Carta Elegante -->
+        <div class="envelope-carta" id="envelope">
+            <div class="envelope-body">
+                <!-- Frente do envelope -->
+                <div class="envelope-front">
+                    <div class="envelope-flap"></div>
+                    
+                    <!-- Endereçamento do envelope -->
+                    <div class="envelope-address">
+                        <div class="destinatario">
+                            <p class="para">Para:</p>
+                            <p class="nome-destinatario">{{ convidado.nome if convidado else 'Querido(a) Convidado(a)' }}</p>
+                        </div>
+                        
+                        <div class="remetente">
+                            <p class="de">De:</p>
+                            <p class="nomes-remetentes">Samuel & Iara</p>
+                            <p class="ocasiao">Convite de Casamento</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Lacre de cera -->
+                    <div class="lacre-cera">
+                        <div class="cera-seal">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Selo decorativo -->
+                    <div class="selo-postal">
+                        <div class="selo-content">
+                            <i class="fas fa-rings-wedding"></i>
+                            <span class="selo-text">♥</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Botão para abrir -->
+                <div class="envelope-action">
+                    <button class="btn-abrir-envelope" onclick="abrirConvite()">
                         <i class="fas fa-envelope-open"></i>
-                        Abrir Convite
+                        <span>Abrir Convite</span>
                     </button>
                 </div>
             </div>
