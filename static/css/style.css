@@ -213,7 +213,7 @@ body {
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Lacre de cera ultra-realista */
+/* Lacre de cera ultra-realista em formato de coração */
 .wax-seal {
     position: absolute;
     top: 80px;
@@ -233,7 +233,6 @@ body {
         #8B1538 60%, 
         #6d1028 85%, 
         #4a0b1c 100%);
-    border-radius: 50%;
     position: relative;
     box-shadow: 
         0 15px 35px rgba(139, 21, 56, 0.6),
@@ -241,21 +240,35 @@ body {
         inset 0 5px 15px rgba(255, 255, 255, 0.2),
         inset 0 -8px 20px rgba(0, 0, 0, 0.4);
     animation: waxGlow 4s ease-in-out infinite alternate;
+    
+    /* Formato de coração usando clip-path */
+    clip-path: polygon(50% 5%, 
+                      61% 35%, 85% 35%, 
+                      85% 57%, 80% 70%, 
+                      50% 95%, 20% 70%, 
+                      15% 57%, 15% 35%, 
+                      39% 35%);
+    
+    /* Fallback para navegadores que não suportam clip-path */
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    transform: rotate(-45deg);
 }
 
+/* Pseudo-elementos para criar formato de coração mais detalhado */
 .wax-circle::before {
     content: '';
     position: absolute;
-    top: 20%;
-    left: 25%;
-    width: 35%;
-    height: 35%;
+    top: 15%;
+    left: 20%;
+    width: 30%;
+    height: 30%;
     background: radial-gradient(circle, 
         rgba(255, 255, 255, 0.4) 0%, 
         rgba(255, 255, 255, 0.1) 50%,
         transparent 100%);
     border-radius: 50%;
     filter: blur(3px);
+    transform: rotate(45deg);
 }
 
 .wax-circle::after {
@@ -266,23 +279,29 @@ body {
     right: -3px;
     bottom: -3px;
     border: 3px solid rgba(139, 21, 56, 0.8);
-    border-radius: 50%;
+    clip-path: polygon(50% 5%, 
+                      61% 35%, 85% 35%, 
+                      85% 57%, 80% 70%, 
+                      50% 95%, 20% 70%, 
+                      15% 57%, 15% 35%, 
+                      39% 35%);
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
     box-shadow: 
         0 0 0 1px rgba(255, 255, 255, 0.2),
         inset 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
-/* Impressão no lacre */
+/* Impressão no lacre com fonte elegante */
 .wax-impression {
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) rotate(45deg);
     display: flex;
     align-items: center;
     justify-content: center;
     color: rgba(255, 255, 255, 0.95);
-    font-family: 'Playfair Display', serif;
+    font-family: 'Dancing Script', cursive;
     font-weight: 700;
     text-shadow: 
         2px 2px 4px rgba(0, 0, 0, 0.6),
@@ -291,34 +310,37 @@ body {
 }
 
 .initial-left, .initial-right {
-    font-size: 3.2em;
-    letter-spacing: -3px;
+    font-size: 3.5em;
+    letter-spacing: -4px;
     font-style: italic;
+    font-weight: 700;
 }
 
 .heart-separator {
-    font-size: 1.8em;
-    margin: 0 10px;
+    font-size: 2em;
+    margin: 0 5px;
     animation: heartBeat 2.5s ease-in-out infinite;
+    font-family: 'Font Awesome 5 Free';
+    font-weight: 900;
 }
 
-/* Pingos de cera */
+/* Pingos de cera ajustados para coração */
 .wax-drips {
     position: absolute;
-    top: 100%;
+    top: 95%;
     left: 50%;
     transform: translateX(-50%);
-    width: 20px;
-    height: 30px;
+    width: 18px;
+    height: 25px;
     background: linear-gradient(180deg, 
         var(--cor-principal) 0%, 
         #6d1028 100%);
     border-radius: 0 0 50% 50%;
     box-shadow: 
-        -25px 5px 0 -8px var(--cor-principal),
-        25px 8px 0 -10px #8B1538,
-        -40px 12px 0 -12px #6d1028,
-        35px 15px 0 -14px var(--cor-principal);
+        -20px 3px 0 -6px var(--cor-principal),
+        20px 5px 0 -8px #8B1538,
+        -35px 8px 0 -10px #6d1028,
+        30px 10px 0 -12px var(--cor-principal);
     opacity: 0.8;
 }
 
@@ -1703,13 +1725,13 @@ body {
     }
     
     .initial-left, .initial-right {
-        font-size: 2.5em;
-        letter-spacing: -2px;
+        font-size: 2.8em;
+        letter-spacing: -3px;
     }
     
     .heart-separator {
-        font-size: 1.4em;
-        margin: 0 8px;
+        font-size: 1.6em;
+        margin: 0 4px;
     }
     
     .envelope-top-flap {
