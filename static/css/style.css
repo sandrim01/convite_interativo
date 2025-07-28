@@ -40,7 +40,7 @@ body {
     padding: 20px;
 }
 
-/* Envelope de Carta Elegante */
+/* Envelope de Carta Elegante com Brasão */
 .envelope-carta {
     width: 450px;
     height: 320px;
@@ -62,18 +62,19 @@ body {
 .envelope-front {
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, #f8f4f0 0%, #ede3d3 50%, #e8dcc0 100%);
-    border: 2px solid #d4a574;
-    border-radius: 8px;
+    background: linear-gradient(135deg, #faf7f2 0%, #f0e6d2 50%, #e8dcc0 100%);
+    border: 3px solid #d4a574;
+    border-radius: 12px;
     position: relative;
     box-shadow: 
-        0 15px 35px rgba(139, 21, 56, 0.2),
-        0 5px 15px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+        0 20px 40px rgba(139, 21, 56, 0.15),
+        0 8px 25px rgba(0, 0, 0, 0.1),
+        inset 0 2px 0 rgba(255, 255, 255, 0.9),
+        inset 0 -2px 0 rgba(139, 21, 56, 0.1);
     overflow: hidden;
 }
 
-/* Aba do envelope */
+/* Aba superior do envelope */
 .envelope-flap {
     position: absolute;
     top: 0;
@@ -82,157 +83,147 @@ body {
     height: 0;
     border-left: 225px solid transparent;
     border-right: 225px solid transparent;
-    border-top: 120px solid #8B1538;
+    border-top: 140px solid var(--cor-principal);
     z-index: 10;
-    box-shadow: 0 3px 8px rgba(139, 21, 56, 0.3);
+    box-shadow: 
+        0 5px 15px rgba(139, 21, 56, 0.4),
+        inset 0 -3px 0 rgba(0, 0, 0, 0.2);
 }
 
 .envelope-flap::before {
     content: '';
     position: absolute;
-    top: -118px;
+    top: -138px;
     left: -223px;
     right: -223px;
-    height: 2px;
-    background: linear-gradient(45deg, transparent 25%, rgba(255, 255, 255, 0.3) 50%, transparent 75%);
+    height: 3px;
+    background: linear-gradient(45deg, 
+        transparent 20%, 
+        rgba(255, 255, 255, 0.4) 50%, 
+        transparent 80%);
 }
 
-/* Endereçamento */
-.envelope-address {
+/* Brasão em cera com iniciais */
+.brasao-cera {
     position: absolute;
-    top: 140px;
-    left: 40px;
-    right: 40px;
-    bottom: 60px;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.destinatario {
-    margin-bottom: 20px;
-}
-
-.para {
-    font-family: 'Playfair Display', serif;
-    font-size: 0.9em;
-    color: #8B1538;
-    margin: 0 0 5px 0;
-    font-style: italic;
-}
-
-.nome-destinatario {
-    font-family: 'Dancing Script', cursive;
-    font-size: 1.8em;
-    font-weight: 600;
-    color: #2C3E50;
-    margin: 0;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.remetente {
-    text-align: right;
-}
-
-.de {
-    font-family: 'Playfair Display', serif;
-    font-size: 0.8em;
-    color: #8B1538;
-    margin: 0 0 3px 0;
-    font-style: italic;
-}
-
-.nomes-remetentes {
-    font-family: 'Dancing Script', cursive;
-    font-size: 1.4em;
-    font-weight: 600;
-    color: #2C3E50;
-    margin: 0 0 2px 0;
-}
-
-.ocasiao {
-    font-family: 'Playfair Display', serif;
-    font-size: 0.9em;
-    color: #8B1538;
-    margin: 0;
-    font-style: italic;
-}
-
-/* Lacre de cera */
-.lacre-cera {
-    position: absolute;
-    top: 80px;
-    right: 60px;
-    width: 60px;
-    height: 60px;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 120px;
+    height: 120px;
     z-index: 15;
 }
 
-.cera-seal {
+.cera-brasao {
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle, #8B1538 0%, #6d1028 70%, #5a0d20 100%);
+    background: radial-gradient(circle at 30% 30%, 
+        #a01d3a 0%, 
+        var(--cor-principal) 40%, 
+        #6d1028 100%);
     border-radius: 50%;
+    position: relative;
+    box-shadow: 
+        0 8px 25px rgba(139, 21, 56, 0.6),
+        0 0 30px rgba(139, 21, 56, 0.3),
+        inset 0 3px 8px rgba(255, 255, 255, 0.2),
+        inset 0 -5px 10px rgba(0, 0, 0, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 
-        0 3px 10px rgba(139, 21, 56, 0.6),
-        inset 0 2px 4px rgba(255, 255, 255, 0.2),
-        inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+    animation: brasaoGlow 3s ease-in-out infinite alternate;
+}
+
+.cera-brasao::before {
+    content: '';
+    position: absolute;
+    top: 15%;
+    left: 20%;
+    width: 40%;
+    height: 40%;
+    background: radial-gradient(circle, 
+        rgba(255, 255, 255, 0.3) 0%, 
+        transparent 70%);
+    border-radius: 50%;
+    filter: blur(2px);
+}
+
+.brasao-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    color: #faf7f2;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    text-shadow: 
+        2px 2px 4px rgba(0, 0, 0, 0.5),
+        0 0 10px rgba(255, 255, 255, 0.3);
+    z-index: 1;
     position: relative;
 }
 
-.cera-seal::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 70%;
-    height: 70%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
+.inicial-s, .inicial-i {
+    font-size: 2.8em;
+    letter-spacing: -2px;
+    font-style: italic;
 }
 
-.cera-seal i {
-    color: #f8f4f0;
+.coracao-divisor {
     font-size: 1.5em;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-    z-index: 1;
+    margin: 0 8px;
+    color: #faf7f2;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+    animation: coracaoPulse 2s ease-in-out infinite;
 }
 
-/* Selo postal */
-.selo-postal {
+.cera-border {
     position: absolute;
-    top: 140px;
-    right: 20px;
-    width: 50px;
-    height: 60px;
-    background: linear-gradient(135deg, #D4A574 0%, #c49660 100%);
-    border: 2px solid #8B1538;
-    border-radius: 3px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border: 2px solid rgba(139, 21, 56, 0.8);
+    border-radius: 50%;
+    box-shadow: 
+        0 0 0 1px rgba(255, 255, 255, 0.2),
+        inset 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
-.selo-content {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: #8B1538;
+/* Ornamentos decorativos */
+.ornamento-esquerdo, .ornamento-direito {
+    position: absolute;
+    bottom: 60px;
+    width: 80px;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        var(--cor-secundaria) 20%, 
+        var(--cor-principal) 50%, 
+        var(--cor-secundaria) 80%, 
+        transparent 100%);
+    box-shadow: 0 1px 3px rgba(139, 21, 56, 0.3);
 }
 
-.selo-content i {
+.ornamento-esquerdo {
+    left: 40px;
+    transform: rotate(-15deg);
+}
+
+.ornamento-direito {
+    right: 40px;
+    transform: rotate(15deg);
+}
+
+.ornamento-esquerdo::before, .ornamento-direito::before {
+    content: '◆';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--cor-principal);
     font-size: 1.2em;
-    margin-bottom: 3px;
-}
-
-.selo-text {
-    font-size: 1.1em;
-    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(139, 21, 56, 0.3);
 }
 
 /* Botão de ação */
@@ -249,7 +240,7 @@ body {
     background: linear-gradient(135deg, var(--cor-principal) 0%, #a01d3a 100%);
     color: white;
     border: none;
-    padding: 15px 30px;
+    padding: 15px 35px;
     border-radius: 50px;
     font-family: 'Playfair Display', serif;
     font-size: 1.1em;
@@ -257,21 +248,41 @@ body {
     cursor: pointer;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 
-        0 8px 25px rgba(139, 21, 56, 0.3),
+        0 10px 30px rgba(139, 21, 56, 0.3),
         0 0 0 0 rgba(139, 21, 56, 0.4);
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 12px;
     margin: 0 auto;
-    min-width: 200px;
+    min-width: 220px;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-abrir-envelope::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.2), 
+        transparent);
+    transition: left 0.6s;
+}
+
+.btn-abrir-envelope:hover::before {
+    left: 100%;
 }
 
 .btn-abrir-envelope:hover {
     transform: translateY(-3px);
     box-shadow: 
-        0 15px 35px rgba(139, 21, 56, 0.4),
-        0 0 30px rgba(139, 21, 56, 0.2);
+        0 18px 40px rgba(139, 21, 56, 0.4),
+        0 0 35px rgba(139, 21, 56, 0.2);
     background: linear-gradient(135deg, #a01d3a 0%, var(--cor-principal) 100%);
 }
 
@@ -279,45 +290,79 @@ body {
     transform: translateY(-1px);
 }
 
-/* Animações para o envelope */
+/* Animações */
 .envelope-carta:hover {
-    transform: translateY(-10px) rotateY(5deg);
+    transform: translateY(-12px) rotateY(3deg);
 }
 
 .envelope-carta:hover .envelope-body {
-    transform: rotateX(5deg);
+    transform: rotateX(3deg);
 }
 
-.envelope-carta:hover .lacre-cera {
-    animation: sealGlow 1.5s ease-in-out infinite alternate;
+.envelope-carta:hover .brasao-cera {
+    animation: brasaoHover 1s ease-in-out infinite alternate;
 }
 
-@keyframes sealGlow {
+@keyframes brasaoGlow {
     0% {
+        box-shadow: 
+            0 8px 25px rgba(139, 21, 56, 0.6),
+            0 0 30px rgba(139, 21, 56, 0.3),
+            inset 0 3px 8px rgba(255, 255, 255, 0.2),
+            inset 0 -5px 10px rgba(0, 0, 0, 0.4);
+    }
+    100% {
+        box-shadow: 
+            0 12px 35px rgba(139, 21, 56, 0.8),
+            0 0 45px rgba(139, 21, 56, 0.5),
+            inset 0 3px 8px rgba(255, 255, 255, 0.3),
+            inset 0 -5px 10px rgba(0, 0, 0, 0.3);
+    }
+}
+
+@keyframes brasaoHover {
+    0% {
+        transform: rotateZ(0deg) scale(1);
         filter: brightness(1);
     }
     100% {
-        filter: brightness(1.3) drop-shadow(0 0 10px rgba(139, 21, 56, 0.6));
+        transform: rotateZ(1deg) scale(1.05);
+        filter: brightness(1.2) drop-shadow(0 0 15px rgba(139, 21, 56, 0.7));
+    }
+}
+
+@keyframes coracaoPulse {
+    0%, 100% {
+        transform: scale(1);
+        text-shadow: 0 0 15px rgba(255, 255, 255, 0.6);
+    }
+    50% {
+        transform: scale(1.1);
+        text-shadow: 0 0 25px rgba(255, 255, 255, 0.9);
     }
 }
 
 /* Animação de entrada */
 .envelope-carta {
-    animation: envelopeEntrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+    animation: envelopeEntrance 1.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
 }
 
 @keyframes envelopeEntrance {
     0% {
         opacity: 0;
-        transform: translateY(100px) rotateX(-90deg);
+        transform: translateY(150px) rotateX(-90deg) scale(0.8);
     }
-    50% {
+    30% {
+        opacity: 0.3;
+        transform: translateY(50px) rotateX(-30deg) scale(0.9);
+    }
+    70% {
         opacity: 0.8;
-        transform: translateY(-20px) rotateX(10deg);
+        transform: translateY(-20px) rotateX(10deg) scale(1.02);
     }
     100% {
         opacity: 1;
-        transform: translateY(0) rotateX(0deg);
+        transform: translateY(0) rotateX(0deg) scale(1);
     }
 }
 
@@ -1515,47 +1560,39 @@ body {
         height: 280px;
     }
     
-    .envelope-address {
-        top: 120px;
-        left: 30px;
-        right: 30px;
+    .brasao-cera {
+        width: 100px;
+        height: 100px;
+        top: 60px;
+    }
+    
+    .inicial-s, .inicial-i {
+        font-size: 2.2em;
+    }
+    
+    .coracao-divisor {
+        font-size: 1.2em;
+        margin: 0 6px;
+    }
+    
+    .ornamento-esquerdo, .ornamento-direito {
+        width: 60px;
         bottom: 50px;
     }
     
-    .nome-destinatario {
-        font-size: 1.5em;
+    .ornamento-esquerdo {
+        left: 30px;
     }
     
-    .nomes-remetentes {
-        font-size: 1.2em;
-    }
-    
-    .lacre-cera {
-        width: 50px;
-        height: 50px;
-        top: 70px;
-        right: 50px;
-    }
-    
-    .cera-seal i {
-        font-size: 1.2em;
-    }
-    
-    .selo-postal {
-        width: 40px;
-        height: 50px;
-        top: 130px;
-        right: 15px;
-    }
-    
-    .selo-content i {
-        font-size: 1em;
+    .ornamento-direito {
+        right: 30px;
     }
     
     .btn-abrir-envelope {
         padding: 12px 25px;
         font-size: 1em;
         min-width: 180px;
+        gap: 8px;
     }
     
     .envelope-action {
