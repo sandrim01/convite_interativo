@@ -44,11 +44,60 @@
     
     <!-- Convite Personalizado (quando há convidado válido) -->
     <div class="convite-personalizado">
-        <!-- Envelope Realista -->
-        <div class="envelope-realista" id="envelope">
-            <div class="envelope-shadow"></div>
-            <div class="envelope-base">
-                <!-- Corpo principal do envelope -->
+        <!-- Design Inspirado na Imagem -->
+        <div class="convite-elegante" id="envelope">
+            <!-- Fundo ornamental -->
+            <div class="background-ornament"></div>
+            
+            <!-- Conteúdo principal -->
+            <div class="main-content">
+                <!-- Seção das fotos -->
+                <div class="photos-section">
+                    <div class="photo-frame">
+                        <img src="/static/images/samuel-photo.jpg" alt="Samuel" onerror="this.parentElement.classList.add('placeholder'); this.style.display='none';">
+                        <div class="placeholder-text">Samuel</div>
+                    </div>
+                    
+                    <!-- Badge circular central -->
+                    <div class="circular-badge">
+                        <div class="badge-date">15 SET</div>
+                        <div class="badge-year">2024</div>
+                    </div>
+                    
+                    <div class="photo-frame">
+                        <img src="/static/images/iara-photo.jpg" alt="Iara" onerror="this.parentElement.classList.add('placeholder'); this.style.display='none';">
+                        <div class="placeholder-text">Iara</div>
+                    </div>
+                
+                <!-- Seção de texto -->
+                <div class="text-section">
+                    <p class="subtitle-elegant">Nosso Casamento</p>
+                    <h1 class="names-elegant">Samuel & Iara</h1>
+                    <p class="invitation-text">
+                        Têm o prazer de convidá-lo(a) para celebrar nossa união
+                    </p>
+                    
+                    <!-- Detalhes do evento -->
+                    <div class="event-details">
+                        <div class="event-date">Sábado, 15 de Setembro de 2024</div>
+                        <div class="event-time">às 18:00 horas</div>
+                        <div class="event-location">
+                            Igreja São José<br>
+                            Rua das Flores, 123 - Centro, São Paulo - SP
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Botão para abrir -->
+                <div class="convite-action">
+                    <button class="btn-abrir-convite" onclick="abrirConvite()">
+                        <i class="fas fa-envelope-open"></i>
+                        <span>Abrir Convite</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div> <!-- Fim convite-personalizado -->
                 <div class="envelope-body-main">
                     <!-- Aba traseira fechada -->
                     <div class="envelope-back-flap"></div>

@@ -40,58 +40,272 @@ body {
     padding: 20px;
 }
 
-/* Envelope Ultra-Realista */
-.envelope-realista {
-    width: 480px;
-    height: 340px;
+/* Convite Elegante */
+.convite-elegante {
+    max-width: 600px;
     margin: 0 auto;
+    background: var(--cor-branca);
+    border-radius: 20px;
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        0 10px 20px rgba(139, 21, 56, 0.05);
+    overflow: hidden;
     position: relative;
-    perspective: 1200px;
-    cursor: pointer;
-    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-.envelope-shadow {
+/* Fundo ornamental */
+.background-ornament {
     position: absolute;
-    bottom: -20px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 90%;
-    height: 40px;
-    background: radial-gradient(ellipse, rgba(0, 0, 0, 0.3) 0%, transparent 70%);
-    border-radius: 50%;
-    filter: blur(15px);
-    opacity: 0.6;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, 
+        var(--cor-principal) 0%, 
+        var(--cor-secundaria) 100%);
+    clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%);
     z-index: 1;
 }
 
-.envelope-base {
+.background-ornament::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    position: relative;
-    transform-style: preserve-3d;
-    transition: transform 0.8s ease;
-    z-index: 10;
+    background-image: 
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 2px, transparent 2px),
+        radial-gradient(circle at 80% 40%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.1) 1.5px, transparent 1.5px);
+    background-size: 60px 60px, 40px 40px, 80px 80px;
 }
 
-/* Corpo principal do envelope */
-.envelope-body-main {
+.background-ornament::after {
+    content: '❦';
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 24px;
+    color: rgba(255, 255, 255, 0.3);
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Container principal do conteúdo */
+.main-content {
+    position: relative;
+    z-index: 2;
+    padding: 40px 30px;
+}
+
+/* Seção das fotos */
+.photos-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30px;
+    gap: 20px;
+}
+
+.photo-frame {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 4px solid var(--cor-branca);
+    box-shadow: 
+        0 10px 20px rgba(0, 0, 0, 0.1),
+        0 0 0 2px var(--cor-principal);
+    overflow: hidden;
+    position: relative;
+}
+
+.photo-frame img {
     width: 100%;
     height: 100%;
-    position: relative;
+    object-fit: cover;
+}
+
+.photo-frame.placeholder {
     background: linear-gradient(135deg, 
-        #fefdfb 0%, 
-        #f8f6f0 25%, 
-        #f2efe6 50%, 
-        #ede8dc 75%, 
-        #e6dfd0 100%);
-    border-radius: 8px;
-    box-shadow: 
-        0 25px 50px rgba(0, 0, 0, 0.15),
-        0 15px 35px rgba(139, 21, 56, 0.1),
-        inset 0 2px 0 rgba(255, 255, 255, 0.9),
-        inset 0 -1px 0 rgba(139, 21, 56, 0.05);
+        var(--cor-suave) 0%, 
+        #E0E0E0 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Dancing Script', cursive;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--cor-principal);
+    text-align: center;
+}
+
+.placeholder-text {
+    display: none;
+}
+
+.photo-frame.placeholder .placeholder-text {
+    display: block;
+}
+
+/* Badge circular central */
+.circular-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+    background: var(--cor-branca);
+    border: 3px solid var(--cor-principal);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    animation: pulse-gentle 3s ease-in-out infinite;
+}
+
+@keyframes pulse-gentle {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.05);
+        box-shadow: 0 12px 24px rgba(139, 21, 56, 0.2);
+    }
+}
+
+.badge-date {
+    font-family: 'Dancing Script', cursive;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--cor-principal);
+    line-height: 1;
+}
+
+.badge-year {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--cor-accent);
+    line-height: 1;
+}
+
+/* Seção de texto principal */
+.text-section {
+    text-align: center;
+    margin: 40px 0;
+}
+
+.subtitle-elegant {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    color: var(--cor-accent);
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+}
+
+.names-elegant {
+    font-family: 'Dancing Script', cursive;
+    font-size: 48px;
+    font-weight: 700;
+    color: var(--cor-principal);
+    margin: 20px 0;
+    line-height: 1.2;
+}
+
+.invitation-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--cor-texto);
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.event-details {
+    background: rgba(248, 248, 248, 0.8);
+    padding: 25px;
+    border-radius: 15px;
+    margin: 30px 0;
+    border: 1px solid rgba(139, 21, 56, 0.1);
+}
+
+.event-date {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--cor-principal);
+    margin-bottom: 10px;
+}
+
+.event-time {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    color: var(--cor-texto);
+    margin-bottom: 15px;
+}
+
+.event-location {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    color: var(--cor-texto);
+    line-height: 1.4;
+/* Botão de ação principal */
+.btn-abrir-convite {
+    background: linear-gradient(135deg, 
+        var(--cor-principal) 0%, 
+        var(--cor-secundaria) 100%);
+    color: var(--cor-branca);
+    border: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 16px rgba(139, 21, 56, 0.3);
+    margin-top: 30px;
+    position: relative;
     overflow: hidden;
+}
+
+.btn-abrir-convite::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.2), 
+        transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-abrir-convite:hover::before {
+    left: 100%;
+}
+
+.btn-abrir-convite:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(139, 21, 56, 0.4);
+    background: linear-gradient(135deg, 
+        #A01946 0%, 
+        #D96A7C 100%);
+}
+
+.btn-abrir-convite i {
+    margin-right: 8px;
 }
 
 /* Textura do papel */
@@ -2723,5 +2937,87 @@ body {
     .acoes-convidado {
         flex-direction: row;
         flex-wrap: wrap;
+    }
+}
+
+/* Responsividade para o design elegante */
+@media (max-width: 768px) {
+    .convite-elegante {
+        margin: 10px;
+        border-radius: 15px;
+    }
+    
+    .main-content {
+        padding: 30px 20px;
+    }
+    
+    .photos-section {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+    }
+    
+    .photo-frame {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .circular-badge {
+        width: 80px;
+        height: 80px;
+        position: static;
+        transform: none;
+        margin: 20px 0;
+    }
+    
+    .badge-date {
+        font-size: 14px;
+    }
+    
+    .badge-year {
+        font-size: 18px;
+    }
+    
+    .names-elegant {
+        font-size: 36px;
+    }
+    
+    .invitation-text {
+        font-size: 16px;
+    }
+    
+    .event-details {
+        padding: 20px;
+        margin: 25px 0;
+    }
+    
+    .background-ornament {
+        height: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .convite-elegante {
+        margin: 5px;
+    }
+    
+    .main-content {
+        padding: 20px 15px;
+    }
+    
+    .names-elegant {
+        font-size: 32px;
+    }
+    
+    .subtitle-elegant {
+        font-size: 14px;
+    }
+    
+    .invitation-text {
+        font-size: 15px;
+    }
+    
+    .event-date {
+        font-size: 18px;
     }
 }
