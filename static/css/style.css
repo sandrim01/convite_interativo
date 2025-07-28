@@ -474,7 +474,7 @@ body {
 .radio-group {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 25px;
     margin-top: 15px;
     padding: 10px 0;
 }
@@ -497,7 +497,7 @@ body {
 .radio-label-custom {
     display: flex;
     align-items: flex-start;
-    gap: 15px;
+    gap: 25px;
     cursor: pointer;
     padding: 20px 25px;
     border: 2px solid #D4A574;
