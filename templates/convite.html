@@ -44,36 +44,52 @@
     
     <!-- Convite Personalizado (quando há convidado válido) -->
     <div class="convite-personalizado">
-        <!-- Envelope de Carta Elegante -->
-        <div class="envelope-carta" id="envelope">
-            <div class="envelope-body">
-                <!-- Frente do envelope -->
-                <div class="envelope-front">
-                    <!-- Aba do envelope -->
-                    <div class="envelope-flap"></div>
+        <!-- Envelope Realista -->
+        <div class="envelope-realista" id="envelope">
+            <div class="envelope-shadow"></div>
+            <div class="envelope-base">
+                <!-- Corpo principal do envelope -->
+                <div class="envelope-body-main">
+                    <!-- Aba traseira fechada -->
+                    <div class="envelope-back-flap"></div>
                     
-                    <!-- Brasão em cera com iniciais -->
-                    <div class="brasao-cera">
-                        <div class="cera-brasao">
-                            <div class="brasao-content">
-                                <span class="inicial-s">S</span>
-                                <div class="coracao-divisor">♥</div>
-                                <span class="inicial-i">I</span>
+                    <!-- Frente do envelope -->
+                    <div class="envelope-front-face">
+                        <!-- Textura do papel -->
+                        <div class="paper-texture"></div>
+                        
+                        <!-- Brasão em cera -->
+                        <div class="wax-seal">
+                            <div class="wax-circle">
+                                <div class="wax-impression">
+                                    <span class="initial-left">S</span>
+                                    <div class="heart-separator">♥</div>
+                                    <span class="initial-right">I</span>
+                                </div>
+                                <div class="wax-drips"></div>
                             </div>
-                            <div class="cera-border"></div>
                         </div>
+                        
+                        <!-- Dobras laterais */
+                        <div class="envelope-side-left"></div>
+                        <div class="envelope-side-right"></div>
                     </div>
                     
-                    <!-- Ornamentos decorativos -->
-                    <div class="ornamento-esquerdo"></div>
-                    <div class="ornamento-direito"></div>
+                    <!-- Aba superior triangular */
+                    <div class="envelope-top-flap">
+                        <div class="flap-fold-line"></div>
+                        <div class="flap-shadow"></div>
+                    </div>
                 </div>
                 
                 <!-- Botão para abrir -->
-                <div class="envelope-action">
-                    <button class="btn-abrir-envelope" onclick="abrirConvite()">
-                        <i class="fas fa-envelope-open"></i>
-                        <span>Abrir Convite</span>
+                <div class="envelope-open-action">
+                    <button class="btn-open-realistic" onclick="abrirConvite()">
+                        <div class="btn-icon">
+                            <i class="fas fa-envelope-open"></i>
+                        </div>
+                        <span class="btn-text">Abrir Carta</span>
+                        <div class="btn-shine"></div>
                     </button>
                 </div>
             </div>
