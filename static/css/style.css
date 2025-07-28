@@ -1669,19 +1669,30 @@ body {
     border-color: #FF69B4;
 }
 
+/* ===============================================
+   PAINEL ADMINISTRATIVO - ESTILOS ESPECÍFICOS
+   =============================================== */
 /* Admin Panel */
 .admin-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    background: var(--cor-fundo);
+    min-height: 100vh;
+}
+
+.admin-container .container {
+    max-width: none;
+    padding: 0;
 }
 
 .admin-header {
-    background: white;
+    background: var(--cor-branca);
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     margin-bottom: 30px;
+    border: 1px solid rgba(139, 21, 56, 0.1);
 }
 
 .admin-header-content {
@@ -1697,9 +1708,17 @@ body {
 }
 
 .admin-title h1 {
-    color: #8B4513;
+    color: var(--cor-principal) !important;
     font-size: 2.2em;
     margin-bottom: 10px;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+}
+
+.admin-title p {
+    color: var(--cor-texto);
+    font-size: 1.1em;
+    margin: 0;
 }
 
 .admin-actions {
@@ -1750,12 +1769,17 @@ body {
     margin-bottom: 30px;
     justify-content: center;
     flex-wrap: wrap;
+    background: var(--cor-branca);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    border: 1px solid rgba(139, 21, 56, 0.1);
 }
 
 .tab-btn {
-    background: linear-gradient(135deg, #fff, #f8f9fa);
-    color: #8B4513;
-    border: 3px solid #FFB6C1;
+    background: linear-gradient(135deg, var(--cor-branca), #f8f9fa);
+    color: var(--cor-principal);
+    border: 2px solid var(--cor-secundaria);
     padding: 15px 30px;
     border-radius: 25px;
     cursor: pointer;
@@ -1766,23 +1790,26 @@ body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    box-shadow: 0 4px 10px rgba(255, 182, 193, 0.3);
+    box-shadow: 0 4px 10px rgba(139, 21, 56, 0.2);
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
 }
 
 .tab-btn.active, .tab-btn:hover {
-    background: linear-gradient(135deg, #FF69B4, #FF1493);
-    color: white;
-    border-color: #FF1493;
+    background: linear-gradient(135deg, var(--cor-principal), var(--cor-secundaria));
+    color: var(--cor-branca);
+    border-color: var(--cor-principal);
     transform: translateY(-2px);
-    box-shadow: 0 6px 15px rgba(255, 105, 180, 0.4);
+    box-shadow: 0 6px 15px rgba(139, 21, 56, 0.3);
 }
 
 .tab-content {
     display: none;
-    background: white;
+    background: var(--cor-branca);
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    border: 1px solid rgba(139, 21, 56, 0.1);
 }
 
 .tab-content.active {
@@ -1790,8 +1817,11 @@ body {
 }
 
 .tab-content h2 {
-    color: #8B4513;
+    color: var(--cor-principal);
     margin-bottom: 25px;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8em;
+    font-weight: 700;
 }
 
 /* Tabelas admin */
@@ -1803,16 +1833,25 @@ body {
     width: 100%;
     border-collapse: collapse;
     margin-bottom: 20px;
+    background: var(--cor-branca);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
 }
 
 .admin-table th, .admin-table td {
-    padding: 12px;
+    padding: 15px;
     text-align: left;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid rgba(139, 21, 56, 0.1);
 }
 
 .admin-table th {
-    background: #f8f9fa;
+    background: linear-gradient(135deg, var(--cor-principal), var(--cor-secundaria));
+    color: var(--cor-branca);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 14px;
     font-weight: 600;
     color: #333;
 }
@@ -3008,6 +3047,45 @@ body {
     .background-ornament {
         height: 150px;
     }
+    
+    /* Admin responsivo */
+    .admin-container {
+        padding: 10px;
+    }
+    
+    .admin-header {
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .admin-header-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .admin-title h1 {
+        font-size: 1.8em;
+    }
+    
+    .admin-tabs {
+        padding: 15px;
+        gap: 8px;
+    }
+    
+    .tab-btn {
+        padding: 12px 20px;
+        font-size: 12px;
+    }
+    
+    .tab-content {
+        padding: 20px 15px;
+    }
+    
+    .admin-table th, .admin-table td {
+        padding: 10px 8px;
+        font-size: 14px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -3033,5 +3111,26 @@ body {
     
     .event-date {
         font-size: 18px;
+    }
+    
+    /* Admin mobile */
+    .admin-tabs {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .tab-btn {
+        width: 100%;
+        max-width: 250px;
+        justify-content: center;
+    }
+    
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .admin-table {
+        min-width: 600px;
     }
 }
