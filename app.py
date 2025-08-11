@@ -1070,3 +1070,5 @@ if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     debug = os.getenv('FLASK_ENV') == 'development'
     app.run(debug=debug, host='0.0.0.0', port=port)
+#   F i x   U T F - 8   0 8 / 1 1 / 2 0 2 5   1 9 : 0 4 : 5 0  
+ 
