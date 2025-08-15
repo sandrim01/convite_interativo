@@ -885,8 +885,9 @@ function showTab(tabName) {
     event.target.classList.add('active');
     
     // Carregar convidados se necessário
-    if (tabName === 'convidados') {
-        carregarConvidados();
+    if (tabName === 'dashboard') {
+        // Carregar automaticamente quando abrir o dashboard
+        setTimeout(carregarConvidados, 100);
     }
 }
 
@@ -1192,6 +1193,12 @@ async function enviarWhatsAppIndividual(convidadoId) {
         alert('Erro ao enviar WhatsApp. Tente novamente.');
     }
 }
+
+// Carregar convidados quando a página carregar
+document.addEventListener('DOMContentLoaded', function() {
+    // Carregar convidados automaticamente no dashboard
+    setTimeout(carregarConvidados, 500);
+});
 
 </script>
 {% endblock %}

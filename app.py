@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 import psycopg2
 import uuid
 import hashlib
+from urllib.parse import quote
 
 load_dotenv()
 
@@ -305,6 +306,98 @@ def api_adicionar_convidado():
         })
     except Exception as e:
         return jsonify({'success': False, 'message': f'Erro ao adicionar convidado: {str(e)}'})
+
+# API para listar convidados
+@app.route('/api/listar-convidados', methods=['GET'])
+def api_listar_convidados():
+    if 'admin' not in session:
+        return jsonify({'success': False, 'message': 'Não autorizado'}), 401
+    
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        
+        cur.execute("""
+            SELECT id, nome, email, telefone, link_convite, convite_enviado, 
+                   enviado_em, criado_em, confirmado, mensagem
+            FROM convidados 
+            ORDER BY criado_em DESC
+        """)
+        
+        convidados = []
+        for row in cur.fetchall():
+            convidado = {
+                'id': row[0],
+                'nome': row[1],
+                'whatsapp': row[3],  # telefone como whatsapp
+                'email': row[2],     # email correto
+                'link_convite': request.url_root + f'convite/{row[4]}' if row[4] else None,
+                'convite_enviado': row[5],
+                'data_envio_convite': row[6].strftime('%d/%m/%Y %H:%M') if row[6] else None,
+                'data_ultima_visita': row[7].strftime('%d/%m/%Y %H:%M') if row[7] else 'Nunca visitou',
+                'status_resposta': 'confirmado' if row[8] else 'pendente',
+                'mensagem': row[9]
+            }
+            convidados.append(convidado)
+        
+        cur.close()
+        conn.close()
+        
+        return jsonify({'success': True, 'convidados': convidados})
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Erro ao listar convidados: {str(e)}'})
+
+# API para envio individual de WhatsApp
+@app.route('/api/enviar-whatsapp-individual', methods=['POST'])
+def api_enviar_whatsapp_individual():
+    if 'admin' not in session:
+        return jsonify({'success': False, 'message': 'Não autorizado'}), 401
+    
+    data = request.get_json()
+    convidado_id = data.get('convidado_id')
+    
+    if not convidado_id:
+        return jsonify({'success': False, 'message': 'ID do convidado é obrigatório'})
+    
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        
+        # Buscar dados do convidado
+        cur.execute("SELECT nome, telefone, link_convite FROM convidados WHERE id = %s", (convidado_id,))
+        convidado = cur.fetchone()
+        
+        if not convidado:
+            return jsonify({'success': False, 'message': 'Convidado não encontrado'})
+        
+        nome, telefone, link_convite = convidado
+        
+        if not telefone:
+            return jsonify({'success': False, 'message': 'Convidado não tem WhatsApp cadastrado'})
+        
+        # Gerar link do WhatsApp
+        convite_url = request.url_root + f'convite/{link_convite}'
+        mensagem = f"Olá {nome}! 🎉\n\nVocê está convidado(a) para o nosso casamento! 💒❤️\n\nAcesse seu convite personalizado: {convite_url}\n\nEsperamos você lá!\n\nCom amor,\nAlessandro & [Nome da Noiva] 💕"
+        
+        # Limpar telefone (remover caracteres especiais)
+        telefone_limpo = ''.join(filter(str.isdigit, telefone))
+        if not telefone_limpo.startswith('55'):
+            telefone_limpo = '55' + telefone_limpo
+        
+        whatsapp_url = f"https://wa.me/{telefone_limpo}?text={quote(mensagem)}"
+        
+        cur.close()
+        conn.close()
+        
+        return jsonify({
+            'success': True,
+            'link_whatsapp': whatsapp_url,
+            'nome_convidado': nome
+        })
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Erro ao gerar link WhatsApp: {str(e)}'})
 
 # API para adicionar presente
 @app.route('/api/adicionar-presente', methods=['POST'])
