@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 import os
 from dotenv import load_dotenv
 import psycopg2
+import uuid
+import hashlib
 
 load_dotenv()
 
@@ -16,6 +18,13 @@ DB_PORT = os.getenv('DB_PORT', 5432)
 
 
 app.secret_key = os.getenv('SECRET_KEY', 'chave-padrao')
+
+# Função para gerar link único do convidado
+def gerar_link_convite(nome, email=None):
+    """Gera um link único para o convidado baseado no nome e timestamp"""
+    base_string = f"{nome}_{email or ''}_{uuid.uuid4().hex[:8]}"
+    hash_object = hashlib.md5(base_string.encode())
+    return hash_object.hexdigest()[:12]
 
 # Função para obter conexão
 def get_conn():
@@ -35,6 +44,9 @@ def criar_tabelas():
             telefone VARCHAR(20),
             confirmado BOOLEAN DEFAULT FALSE,
             mensagem TEXT,
+            link_convite VARCHAR(100) UNIQUE,
+            convite_enviado BOOLEAN DEFAULT FALSE,
+            enviado_em TIMESTAMP,
             criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );''',
         '''CREATE TABLE IF NOT EXISTS presentes (
@@ -85,6 +97,43 @@ def convite():
     endereco = 'Rua das Flores, 123 - Centro, São Paulo - SP'
     return render_template('convite.html', maps_api_key=maps_api_key, latitude=latitude, longitude=longitude, nome_local=nome_local, endereco=endereco)
 
+# Rota de convite personalizado
+@app.route('/convite/<link_convite>')
+def convite_personalizado(link_convite):
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute("SELECT nome, email FROM convidados WHERE link_convite = %s", (link_convite,))
+        convidado = cur.fetchone()
+        cur.close()
+        conn.close()
+        
+        if not convidado:
+            # Se não encontrar o link, redireciona para convite geral
+            return redirect(url_for('convite'))
+        
+        nome_convidado = convidado[0]
+        email_convidado = convidado[1]
+        
+        maps_api_key = os.getenv('GOOGLE_MAPS_API_KEY', '')
+        latitude = -23.55052
+        longitude = -46.633308
+        nome_local = 'Espaço de Eventos'
+        endereco = 'Rua das Flores, 123 - Centro, São Paulo - SP'
+        
+        return render_template('convite.html', 
+                             maps_api_key=maps_api_key, 
+                             latitude=latitude, 
+                             longitude=longitude, 
+                             nome_local=nome_local, 
+                             endereco=endereco,
+                             nome_convidado=nome_convidado,
+                             email_convidado=email_convidado,
+                             link_convite=link_convite)
+    except Exception as e:
+        print(f"Erro ao carregar convite personalizado: {e}")
+        return redirect(url_for('convite'))
+
 # RSVP: confirmação de presença
 @app.route('/rsvp', methods=['GET', 'POST'])
 def rsvp():
@@ -93,11 +142,38 @@ def rsvp():
         email = request.form.get('email')
         telefone = request.form.get('telefone')
         mensagem = request.form.get('mensagem')
+        link_convite = request.form.get('link_convite')  # Para convites personalizados
+        
         try:
             conn = get_conn()
             cur = conn.cursor()
-            cur.execute('INSERT INTO convidados (nome, email, telefone, confirmado, mensagem) VALUES (%s, %s, %s, %s, %s)',
-                        (nome, email, telefone, True, mensagem))
+            
+            if link_convite:
+                # Atualizar convidado existente
+                cur.execute(
+                    """UPDATE convidados 
+                       SET email = COALESCE(%s, email), 
+                           telefone = COALESCE(%s, telefone), 
+                           confirmado = TRUE, 
+                           mensagem = %s 
+                       WHERE link_convite = %s""",
+                    (email, telefone, mensagem, link_convite)
+                )
+                if cur.rowcount == 0:
+                    # Se não encontrou o link, criar novo convidado
+                    link_novo = gerar_link_convite(nome, email)
+                    cur.execute(
+                        'INSERT INTO convidados (nome, email, telefone, confirmado, mensagem, link_convite) VALUES (%s, %s, %s, %s, %s, %s)',
+                        (nome, email, telefone, True, mensagem, link_novo)
+                    )
+            else:
+                # Criar novo convidado (convite geral)
+                link_novo = gerar_link_convite(nome, email)
+                cur.execute(
+                    'INSERT INTO convidados (nome, email, telefone, confirmado, mensagem, link_convite) VALUES (%s, %s, %s, %s, %s, %s)',
+                    (nome, email, telefone, True, mensagem, link_novo)
+                )
+            
             conn.commit()
             cur.close()
             conn.close()
@@ -154,6 +230,62 @@ def admin_login():
         else:
             flash('Senha inválida.', 'danger')
     return render_template('admin_login.html')
+
+# API para adicionar convidado
+@app.route('/api/adicionar-convidado', methods=['POST'])
+def api_adicionar_convidado():
+    if 'admin' not in session:
+        return jsonify({'success': False, 'message': 'Não autorizado'}), 401
+    
+    data = request.get_json()
+    nome = data.get('nome', '').strip()
+    email = data.get('email', '').strip()
+    telefone = data.get('telefone', '').strip()
+    
+    if not nome:
+        return jsonify({'success': False, 'message': 'Nome é obrigatório'})
+    
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        
+        # Gerar link único para o convidado
+        link_convite = gerar_link_convite(nome, email)
+        
+        # Verificar se já existe convidado com mesmo nome
+        cur.execute("SELECT id FROM convidados WHERE nome ILIKE %s", (nome,))
+        if cur.fetchone():
+            cur.close()
+            conn.close()
+            return jsonify({'success': False, 'message': 'Já existe um convidado com este nome'})
+        
+        # Inserir novo convidado
+        cur.execute(
+            """INSERT INTO convidados (nome, email, telefone, link_convite) 
+               VALUES (%s, %s, %s, %s) RETURNING id""",
+            (nome, email if email else None, telefone if telefone else None, link_convite)
+        )
+        convidado_id = cur.fetchone()[0]
+        conn.commit()
+        cur.close()
+        conn.close()
+        
+        # Construir URL completo do convite
+        convite_url = request.url_root + f'convite/{link_convite}'
+        
+        return jsonify({
+            'success': True, 
+            'message': f'Convidado {nome} adicionado com sucesso!',
+            'convidado': {
+                'id': convidado_id,
+                'nome': nome,
+                'email': email,
+                'telefone': telefone,
+                'link_convite': convite_url
+            }
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Erro ao adicionar convidado: {str(e)}'})
 
 # API para adicionar presente
 @app.route('/api/adicionar-presente', methods=['POST'])

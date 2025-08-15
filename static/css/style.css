@@ -3134,3 +3134,68 @@ body {
         min-width: 600px;
     }
 }
+
+/* ===============================================
+   MENSAGEM PERSONALIZADA PARA CONVIDADOS
+   =============================================== */
+.mensagem-personalizada {
+    background: linear-gradient(135deg, var(--cor-principal) 0%, var(--cor-secundaria) 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 25px rgba(139, 21, 56, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.mensagem-personalizada::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="hearts-pattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><text x="10" y="15" text-anchor="middle" fill="rgba(255,255,255,0.1)" font-size="12">♥</text></pattern></defs><rect width="100" height="100" fill="url(%23hearts-pattern)"/></svg>');
+    opacity: 0.3;
+}
+
+.mensagem-personalizada > * {
+    position: relative;
+    z-index: 1;
+}
+
+.mensagem-personalizada i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.mensagem-personalizada p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+}
+
+.mensagem-personalizada strong {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.3em;
+    font-weight: 700;
+}
+
+.texto-especial {
+    font-style: italic;
+    opacity: 0.9;
+    font-size: 0.9rem !important;
+}
+
+@media (max-width: 768px) {
+    .mensagem-personalizada {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .mensagem-personalizada strong {
+        font-size: 1.2em;
+    }
+}

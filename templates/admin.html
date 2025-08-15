@@ -326,6 +326,69 @@
     box-shadow: 0 8px 20px rgba(40, 167, 69, 0.4);
 }
 
+/* Estilos para resultados e ações */
+.alert {
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid transparent;
+    margin: 1rem 0;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c8e6c9 100%);
+    color: #155724;
+    border-color: #c3e6cb;
+}
+
+.alert h4 {
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Playfair Display', serif;
+}
+
+.btn-copiar, .btn-whatsapp {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.btn-copiar {
+    background: linear-gradient(135deg, var(--admin-accent) 0%, #34495e 100%);
+    color: white;
+}
+
+.btn-copiar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(44, 62, 80, 0.3);
+}
+
+.btn-whatsapp {
+    background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+    color: white;
+}
+
+.btn-whatsapp:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3);
+}
+
+code {
+    background: #e9ecef;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9rem;
+}
+
 @media (max-width: 768px) {
     .admin-header-content {
         flex-direction: column;
@@ -397,6 +460,10 @@
                 <i class="fas fa-tachometer-alt"></i>
                 Dashboard
             </button>
+            <button class="tab-btn" onclick="showTab('adicionar-convidado')">
+                <i class="fas fa-user-plus"></i>
+                Adicionar Convidado
+            </button>
             <button class="tab-btn" onclick="showTab('adicionar')">
                 <i class="fas fa-plus"></i>
                 Adicionar Presente
@@ -424,6 +491,7 @@
                             <th><i class="fas fa-envelope"></i> Email</th>
                             <th><i class="fas fa-phone"></i> Telefone</th>
                             <th><i class="fas fa-comment"></i> Mensagem</th>
+                            <th><i class="fas fa-link"></i> Link do Convite</th>
                             <th><i class="fas fa-calendar"></i> Data</th>
                         </tr>
                     </thead>
@@ -434,6 +502,20 @@
                             <td>{{ c.email or '-' }}</td>
                             <td>{{ c.telefone or '-' }}</td>
                             <td>{{ c.mensagem or '-' }}</td>
+                            <td>
+                                {% if c.link_convite %}
+                                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                        <button class="link-btn" onclick="copiarLink('{{ request.url_root }}convite/{{ c.link_convite }}')" title="Copiar link">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                        <button class="link-btn" onclick="abrirLink('{{ request.url_root }}convite/{{ c.link_convite }}')" title="Abrir convite">
+                                            <i class="fas fa-external-link-alt"></i>
+                                        </button>
+                                    </div>
+                                {% else %}
+                                    <span style="color: #6c757d;">Sem link</span>
+                                {% endif %}
+                            </td>
                             <td>{{ c.criado_em.strftime('%d/%m/%Y %H:%M') if c.criado_em else '-' }}</td>
                         </tr>
                         {% endfor %}
@@ -570,6 +652,75 @@
         </div>
         </div> <!-- Fim tab-dashboard -->
 
+    <!-- Tab Adicionar Convidado -->
+    <div id="tab-adicionar-convidado" class="tab-content">
+        <div class="section-card" style="max-width: 800px; margin: 0 auto;">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <h3>Adicionar Novo Convidado</h3>
+            </div>
+            
+            <form id="form-adicionar-convidado" class="form-admin">
+                <div class="form-group">
+                    <label for="nome-convidado">
+                        <i class="fas fa-user"></i>
+                        Nome Completo do Convidado *
+                    </label>
+                    <input type="text" id="nome-convidado" name="nome" required 
+                           placeholder="Ex: Maria Silva">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email-convidado">
+                        <i class="fas fa-envelope"></i>
+                        E-mail (opcional)
+                    </label>
+                    <input type="email" id="email-convidado" name="email" 
+                           placeholder="maria.silva@email.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="telefone-convidado">
+                        <i class="fas fa-phone"></i>
+                        Telefone (opcional)
+                    </label>
+                    <input type="tel" id="telefone-convidado" name="telefone" 
+                           placeholder="(11) 99999-9999">
+                </div>
+                
+                <button type="submit" class="btn-adicionar">
+                    <i class="fas fa-user-plus"></i>
+                    Adicionar Convidado
+                </button>
+            </form>
+            
+            <!-- Resultado do convidado adicionado -->
+            <div id="resultado-convidado" style="display: none; margin-top: 2rem;">
+                <div class="alert alert-success">
+                    <h4><i class="fas fa-check-circle"></i> Convidado Adicionado!</h4>
+                    <div style="margin-top: 1rem;">
+                        <strong>Link do Convite:</strong><br>
+                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 0.5rem 0;">
+                            <code id="link-gerado" style="word-break: break-all;"></code>
+                        </div>
+                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                            <button type="button" class="btn-copiar" onclick="copiarLinkConvidado()">
+                                <i class="fas fa-copy"></i>
+                                Copiar Link
+                            </button>
+                            <button type="button" class="btn-whatsapp" onclick="compartilharWhatsApp()">
+                                <i class="fab fa-whatsapp"></i>
+                                Compartilhar WhatsApp
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Tab Adicionar Presente -->
     <div id="tab-adicionar" class="tab-content">
         <h2>Adicionar Novo Presente</h2>
@@ -653,6 +804,109 @@ function showTab(tabName) {
 function mostrarTab(tabName) {
     // Mantém compatibilidade com código existente
     showTab(tabName);
+}
+
+// Adicionar convidado
+document.getElementById('form-adicionar-convidado').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = {
+        nome: formData.get('nome'),
+        email: formData.get('email'),
+        telefone: formData.get('telefone')
+    };
+    
+    if (!data.nome.trim()) {
+        alert('Nome é obrigatório!');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/adicionar-convidado', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Limpar formulário
+            this.reset();
+            
+            // Mostrar resultado
+            document.getElementById('link-gerado').textContent = result.convidado.link_convite;
+            document.getElementById('resultado-convidado').style.display = 'block';
+            
+            // Scroll para o resultado
+            document.getElementById('resultado-convidado').scrollIntoView({ behavior: 'smooth' });
+            
+            // Armazenar dados para outras funções
+            window.ultimoConvidado = result.convidado;
+            
+        } else {
+            alert('Erro: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao adicionar convidado. Tente novamente.');
+    }
+});
+
+// Função para copiar link do convidado
+function copiarLinkConvidado() {
+    const linkElement = document.getElementById('link-gerado');
+    const link = linkElement.textContent;
+    
+    navigator.clipboard.writeText(link).then(function() {
+        alert('Link copiado para a área de transferência!');
+    }).catch(function() {
+        // Fallback para navegadores mais antigos
+        const textArea = document.createElement('textarea');
+        textArea.value = link;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Link copiado para a área de transferência!');
+    });
+}
+
+// Função para compartilhar no WhatsApp
+function compartilharWhatsApp() {
+    if (window.ultimoConvidado) {
+        const convidado = window.ultimoConvidado;
+        const link = convidado.link_convite;
+        const nome = convidado.nome;
+        
+        const mensagem = `Olá ${nome}! 🎉\n\nVocê está convidado(a) para o nosso casamento! 💒❤️\n\nAcesse seu convite personalizado: ${link}\n\nEsperamos você lá!\n\nCom amor,\nAlessandro & [Nome da Noiva] 💕`;
+        
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(mensagem)}`;
+        window.open(whatsappUrl, '_blank');
+    }
+}
+
+// Funções utilitárias para links de convite
+function copiarLink(link) {
+    navigator.clipboard.writeText(link).then(function() {
+        alert('Link copiado para a área de transferência!');
+    }).catch(function() {
+        // Fallback para navegadores mais antigos
+        const textArea = document.createElement('textarea');
+        textArea.value = link;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        alert('Link copiado para a área de transferência!');
+    });
+}
+
+function abrirLink(link) {
+    window.open(link, '_blank');
 }
 
 // Adicionar presente
