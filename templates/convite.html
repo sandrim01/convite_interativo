@@ -59,20 +59,34 @@
             <div class="main-content">
                 <!-- Seção das fotos -->
                 <div class="photos-section">
-                    <div class="photo-frame">
+                    <div class="photo-frame samuel-frame">
                         <img src="/static/images/samuel-photo.jpg" alt="Samuel" onerror="this.parentElement.classList.add('placeholder'); this.style.display='none';">
-                        <div class="placeholder-text">Samuel</div>
+                        <div class="placeholder-text">
+                            <i class="fas fa-user"></i>
+                            <span>Samuel</span>
+                        </div>
+                        <div class="photo-overlay">
+                            <span class="name-overlay">Samuel</span>
+                        </div>
                     </div>
                     
-                    <!-- Badge circular central -->
+                    <!-- Badge circular central com coração -->
                     <div class="circular-badge">
+                        <div class="heart-icon">💕</div>
                         <div class="badge-date">15 SET</div>
                         <div class="badge-year">2024</div>
+                        <div class="save-date">Save the Date</div>
                     </div>
                     
-                    <div class="photo-frame">
+                    <div class="photo-frame iara-frame">
                         <img src="/static/images/iara-photo.jpg" alt="Iara" onerror="this.parentElement.classList.add('placeholder'); this.style.display='none';">
-                        <div class="placeholder-text">Iara</div>
+                        <div class="placeholder-text">
+                            <i class="fas fa-user"></i>
+                            <span>Iara</span>
+                        </div>
+                        <div class="photo-overlay">
+                            <span class="name-overlay">Iara</span>
+                        </div>
                     </div>
                 
                 <!-- Seção de texto -->
@@ -86,7 +100,7 @@
                     {% endif %}
                     
                     <p class="subtitle-elegant">Nosso Casamento</p>
-                    <h1 class="names-elegant">Alessandro & [Nome da Noiva]</h1>
+                    <h1 class="names-elegant">Samuel & Iara</h1>
                     <p class="invitation-text">
                         Têm o prazer de convidá-lo(a) para celebrar nossa união
                     </p>

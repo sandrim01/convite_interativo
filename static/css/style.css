@@ -11,18 +11,20 @@
 }
 
 /* ===============================================
-   PALETA DE CORES - TEMA ROMÂNTICO
+   PALETA DE CORES - TEMA ROMÂNTICO SAMUEL & IARA
    =============================================== */
-/* Paleta de cores baseada no convite Iara & Samuel */
+/* Paleta de cores sofisticada para o casal Samuel & Iara */
 :root {
-    --cor-principal: #8B1538;        /* Bordeaux/Vermelho escuro */
-    --cor-secundaria: #C85A6E;       /* Rosa/Salmão */
-    --cor-accent: #2C3E50;           /* Azul escuro navy */
+    --cor-principal: #8B1538;        /* Bordeaux/Vermelho escuro elegante */
+    --cor-secundaria: #C85A6E;       /* Rosa/Salmão suave */
+    --cor-accent: #2C3E50;           /* Azul escuro navy sofisticado */
     --cor-texto: #2C3E50;            /* Azul escuro para textos */
     --cor-suave: #F5F5F5;            /* Cinza claro */
     --cor-branca: #FFFFFF;           /* Branco puro */
     --cor-dourada: #D4AF37;          /* Dourado suave */
+    --cor-rose-gold: #E8B4B8;        /* Rose gold para detalhes */
     --cor-fundo: #F8F8F8;            /* Fundo suave */
+    --cor-gradiente: linear-gradient(135deg, #8B1538 0%, #C85A6E 50%, #E8B4B8 100%);
 }
 
 /* ===============================================
@@ -34,6 +36,31 @@ body {
     color: var(--cor-texto);
     background: linear-gradient(135deg, var(--cor-suave) 0%, #E8E8E8 100%);
     min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Efeito de partículas de fundo */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 25% 25%, rgba(139, 21, 56, 0.05) 2px, transparent 2px),
+        radial-gradient(circle at 75% 75%, rgba(200, 90, 110, 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 50% 10%, rgba(232, 180, 184, 0.03) 3px, transparent 3px);
+    background-size: 100px 100px, 60px 60px, 150px 150px;
+    animation: float 20s infinite ease-in-out;
+    z-index: -1;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(1deg); }
+    66% { transform: translateY(5px) rotate(-1deg); }
 }
 
 .container {
@@ -43,7 +70,7 @@ body {
 }
 
 /* ===============================================
-   CONVITE ELEGANTE - DESIGN PRINCIPAL
+   CONVITE ELEGANTE - DESIGN PRINCIPAL SAMUEL & IARA
    =============================================== */
 /* Convite Interativo */
 .convite-container {
@@ -52,6 +79,7 @@ body {
     align-items: center;
     min-height: 100vh;
     padding: 20px;
+    perspective: 1000px;
 }
 
 /* Convite Elegante */
@@ -59,12 +87,23 @@ body {
     max-width: 600px;
     margin: 0 auto;
     background: var(--cor-branca);
-    border-radius: 20px;
+    border-radius: 25px;
     box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.1),
-        0 10px 20px rgba(139, 21, 56, 0.05);
+        0 25px 50px rgba(0, 0, 0, 0.15),
+        0 15px 25px rgba(139, 21, 56, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
     overflow: hidden;
     position: relative;
+    transform-style: preserve-3d;
+    transition: all 0.3s ease;
+}
+
+.convite-elegante:hover {
+    transform: translateY(-5px) rotateX(2deg);
+    box-shadow: 
+        0 35px 70px rgba(0, 0, 0, 0.2),
+        0 20px 35px rgba(139, 21, 56, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
 /* Fundo ornamental */
@@ -73,12 +112,11 @@ body {
     top: 0;
     left: 0;
     width: 100%;
-    height: 200px;
-    background: linear-gradient(135deg, 
-        var(--cor-principal) 0%, 
-        var(--cor-secundaria) 100%);
-    clip-path: polygon(0 0, 100% 0, 100% 70%, 0 100%);
+    height: 220px;
+    background: var(--cor-gradiente);
+    clip-path: polygon(0 0, 100% 0, 100% 65%, 50% 85%, 0 65%);
     z-index: 1;
+    overflow: hidden;
 }
 
 .background-ornament::before {
@@ -89,14 +127,20 @@ body {
     width: 100%;
     height: 100%;
     background-image: 
-        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 2px, transparent 2px),
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.15) 2px, transparent 2px),
         radial-gradient(circle at 80% 40%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-        radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.1) 1.5px, transparent 1.5px);
-    background-size: 60px 60px, 40px 40px, 80px 80px;
+        radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.12) 1.5px, transparent 1.5px);
+    background-size: 80px 80px, 50px 50px, 100px 100px;
+    animation: sparkle 15s infinite ease-in-out;
+}
+
+@keyframes sparkle {
+    0%, 100% { opacity: 1; transform: translate(0, 0); }
+    50% { opacity: 0.7; transform: translate(10px, -5px); }
 }
 
 .background-ornament::after {
-    content: '❦';
+    content: '♡ Samuel & Iara ♡';
     position: absolute;
     top: 20px;
     right: 30px;
@@ -136,12 +180,59 @@ body {
         0 0 0 2px var(--cor-principal);
     overflow: hidden;
     position: relative;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.photo-frame:hover {
+    transform: scale(1.05);
+    box-shadow: 
+        0 15px 30px rgba(0, 0, 0, 0.2),
+        0 0 0 3px var(--cor-secundaria);
 }
 
 .photo-frame img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.photo-frame:hover img {
+    transform: scale(1.1);
+}
+
+/* Overlay para nomes */
+.photo-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(139, 21, 56, 0.8));
+    color: white;
+    padding: 8px;
+    text-align: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.photo-frame:hover .photo-overlay {
+    opacity: 1;
+}
+
+.name-overlay {
+    font-family: 'Dancing Script', cursive;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Frames específicos para Samuel e Iara */
+.samuel-frame {
+    border-color: var(--cor-principal);
+}
+
+.iara-frame {
+    border-color: var(--cor-secundaria);
 }
 
 .photo-frame.placeholder {
@@ -151,6 +242,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
     font-family: 'Dancing Script', cursive;
     font-size: 16px;
     font-weight: 600;
@@ -160,10 +252,18 @@ body {
 
 .placeholder-text {
     display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.placeholder-text i {
+    font-size: 24px;
+    opacity: 0.7;
 }
 
 .photo-frame.placeholder .placeholder-text {
-    display: block;
+    display: flex;
 }
 
 /* Badge circular central */
@@ -172,37 +272,103 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 100px;
-    height: 100px;
+    width: 110px;
+    height: 110px;
     background: var(--cor-branca);
-    border: 3px solid var(--cor-principal);
+    border: 4px solid var(--cor-principal);
     border-radius: 50%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: 
+        0 12px 24px rgba(0, 0, 0, 0.2),
+        0 0 0 2px var(--cor-rose-gold);
     z-index: 10;
-    animation: pulse-gentle 3s ease-in-out infinite;
+    animation: pulse-gentle 4s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+}
+
+.circular-badge::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        from 0deg,
+        transparent 340deg,
+        var(--cor-rose-gold) 360deg
+    );
+    animation: rotate 6s linear infinite;
+    opacity: 0.3;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 @keyframes pulse-gentle {
     0%, 100% {
         transform: translate(-50%, -50%) scale(1);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        box-shadow: 
+            0 12px 24px rgba(0, 0, 0, 0.2),
+            0 0 0 2px var(--cor-rose-gold);
     }
     50% {
-        transform: translate(-50%, -50%) scale(1.05);
-        box-shadow: 0 12px 24px rgba(139, 21, 56, 0.2);
+        transform: translate(-50%, -50%) scale(1.08);
+        box-shadow: 
+            0 16px 32px rgba(139, 21, 56, 0.25),
+            0 0 0 3px var(--cor-principal);
     }
+}
+
+.heart-icon {
+    font-size: 20px;
+    margin-bottom: 2px;
+    animation: heartbeat 2s ease-in-out infinite;
+    position: relative;
+    z-index: 2;
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
 }
 
 .badge-date {
     font-family: 'Dancing Script', cursive;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--cor-principal);
     line-height: 1;
+    position: relative;
+    z-index: 2;
+}
+
+.badge-year {
+    font-family: 'Dancing Script', cursive;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cor-accent);
+    line-height: 1;
+    position: relative;
+    z-index: 2;
+}
+
+.save-date {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 8px;
+    font-weight: 600;
+    color: var(--cor-secundaria);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+    position: relative;
+    z-index: 2;
 }
 
 .badge-year {
