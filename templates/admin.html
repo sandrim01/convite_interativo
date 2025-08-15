@@ -206,6 +206,9 @@
     border-radius: 5px;
     background: rgba(139, 21, 56, 0.1);
     transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
 }
 
 .link-btn:hover {
@@ -389,6 +392,95 @@ code {
     font-size: 0.9rem;
 }
 
+/* Estilos para ações de convidados */
+.acoes-convidado {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn-acao {
+    padding: 0.5rem 0.8rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.btn-whatsapp-individual {
+    background: #25d366;
+    color: white;
+}
+
+.btn-whatsapp-individual:hover {
+    background: #128c7e;
+    transform: translateY(-1px);
+}
+
+.btn-ver {
+    background: #17a2b8;
+    color: white;
+}
+
+.btn-ver:hover {
+    background: #138496;
+    transform: translateY(-1px);
+}
+
+.btn-excluir {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-excluir:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+}
+
+.status {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.status-pendente {
+    background: #fff3cd;
+    color: #856404;
+}
+
+.status-confirmado {
+    background: #d4edda;
+    color: #155724;
+}
+
+.status-nao_comparecera {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.envio-status {
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.enviado {
+    background: #d4edda;
+    color: #155724;
+}
+
+.nao-enviado {
+    background: #f8d7da;
+    color: #721c24;
+}
+
 @media (max-width: 768px) {
     .admin-header-content {
         flex-direction: column;
@@ -411,6 +503,11 @@ code {
     .admin-table th,
     .admin-table td {
         padding: 0.5rem;
+    }
+    
+    .acoes-convidado {
+        flex-direction: column;
+        gap: 0.3rem;
     }
 }
 </style>
@@ -442,7 +539,7 @@ code {
         <div class="stats-row">
             <div class="stat-card">
                 <span class="stat-number">{{ convidados|length }}</span>
-                <span class="stat-label">Convidados Confirmados</span>
+                <span class="stat-label">Convidados Cadastrados</span>
             </div>
             <div class="stat-card">
                 <span class="stat-number">{{ presentes|selectattr('reservado_por')|list|length }}</span>
@@ -460,6 +557,10 @@ code {
                 <i class="fas fa-tachometer-alt"></i>
                 Dashboard
             </button>
+            <button class="tab-btn" onclick="showTab('convidados')">
+                <i class="fas fa-users"></i>
+                Convidados
+            </button>
             <button class="tab-btn" onclick="showTab('adicionar-convidado')">
                 <i class="fas fa-user-plus"></i>
                 Adicionar Convidado
@@ -472,122 +573,145 @@ code {
 
         <!-- Tab Dashboard -->
         <div id="tab-dashboard" class="tab-content active">
-
-        <!-- Seção Convidados -->
-        <div class="section-card">
-            <div class="section-header">
-                <div class="section-icon">
-                    <i class="fas fa-users"></i>
+            <!-- Seção Convidados -->
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Convidados Confirmados</h3>
                 </div>
-                <h3>Convidados Confirmados</h3>
+                
+                {% if convidados %}
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-user"></i> Nome</th>
+                                <th><i class="fas fa-envelope"></i> Email</th>
+                                <th><i class="fas fa-phone"></i> Telefone</th>
+                                <th><i class="fas fa-comment"></i> Mensagem</th>
+                                <th><i class="fas fa-link"></i> Link do Convite</th>
+                                <th><i class="fas fa-calendar"></i> Data</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for c in convidados %}
+                            <tr>
+                                <td><strong>{{ c.nome }}</strong></td>
+                                <td>{{ c.email or '-' }}</td>
+                                <td>{{ c.telefone or '-' }}</td>
+                                <td>{{ c.mensagem or '-' }}</td>
+                                <td>
+                                    {% if c.link_convite %}
+                                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                            <button class="link-btn" onclick="copiarLink('{{ request.url_root }}convite/{{ c.link_convite }}')" title="Copiar link">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                            <button class="link-btn" onclick="abrirLink('{{ request.url_root }}convite/{{ c.link_convite }}')" title="Abrir convite">
+                                                <i class="fas fa-external-link-alt"></i>
+                                            </button>
+                                            {% if c.telefone %}
+                                            <button class="link-btn" onclick="enviarWhatsAppIndividual({{ c.id }})" title="Enviar WhatsApp">
+                                                <i class="fab fa-whatsapp"></i>
+                                            </button>
+                                            {% endif %}
+                                        </div>
+                                    {% else %}
+                                        <span style="color: #6c757d;">Sem link</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ c.criado_em.strftime('%d/%m/%Y %H:%M') if c.criado_em else '-' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-users-slash"></i>
+                    <h4>Nenhum convidado confirmado ainda</h4>
+                    <p>Quando os convidados confirmarem presença, eles aparecerão aqui.</p>
+                </div>
+                {% endif %}
             </div>
-            
-            {% if convidados %}
-            <div class="table-responsive">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th><i class="fas fa-user"></i> Nome</th>
-                            <th><i class="fas fa-envelope"></i> Email</th>
-                            <th><i class="fas fa-phone"></i> Telefone</th>
-                            <th><i class="fas fa-comment"></i> Mensagem</th>
-                            <th><i class="fas fa-link"></i> Link do Convite</th>
-                            <th><i class="fas fa-calendar"></i> Data</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for c in convidados %}
-                        <tr>
-                            <td><strong>{{ c.nome }}</strong></td>
-                            <td>{{ c.email or '-' }}</td>
-                            <td>{{ c.telefone or '-' }}</td>
-                            <td>{{ c.mensagem or '-' }}</td>
-                            <td>
-                                {% if c.link_convite %}
-                                    <div style="display: flex; gap: 0.5rem; align-items: center;">
-                                        <button class="link-btn" onclick="copiarLink('{{ request.url_root }}convite/{{ c.link_convite }}')" title="Copiar link">
-                                            <i class="fas fa-copy"></i>
-                                        </button>
-                                        <button class="link-btn" onclick="abrirLink('{{ request.url_root }}convite/{{ c.link_convite }}')" title="Abrir convite">
-                                            <i class="fas fa-external-link-alt"></i>
-                                        </button>
-                                    </div>
-                                {% else %}
-                                    <span style="color: #6c757d;">Sem link</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ c.criado_em.strftime('%d/%m/%Y %H:%M') if c.criado_em else '-' }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <div class="empty-state">
-                <i class="fas fa-users-slash"></i>
-                <h4>Nenhum convidado confirmado ainda</h4>
-                <p>Quando os convidados confirmarem presença, eles aparecerão aqui.</p>
-            </div>
-            {% endif %}
-        </div>
 
-        <!-- Seção Presentes -->
-        <div class="section-card">
-            <div class="section-header">
-                <div class="section-icon">
+            <!-- Seção Presentes -->
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-gift"></i>
+                    </div>
+                    <h3>Lista de Presentes</h3>
+                </div>
+                
+                {% if presentes %}
+                <div class="table-responsive">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-gift"></i> Nome do Presente</th>
+                                <th><i class="fas fa-user-heart"></i> Reservado por</th>
+                                <th><i class="fas fa-calendar-check"></i> Data da Reserva</th>
+                                <th><i class="fas fa-external-link-alt"></i> Link</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in presentes %}
+                            <tr>
+                                <td><strong>{{ p.nome }}</strong></td>
+                                <td>
+                                    {% if p.reservado_por %}
+                                        <span style="color: var(--admin-success); font-weight: bold;">
+                                            <i class="fas fa-heart"></i> {{ p.reservado_por }}
+                                        </span>
+                                    {% else %}
+                                        <span style="color: #6c757d;">
+                                            <i class="fas fa-clock"></i> Disponível
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ p.reservado_em.strftime('%d/%m/%Y %H:%M') if p.reservado_em else '-' }}</td>
+                                <td>
+                                    <a href="{{ p.link }}" target="_blank" class="link-btn">
+                                        <i class="fas fa-external-link-alt"></i> Ver na Amazon
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state">
                     <i class="fas fa-gift"></i>
+                    <h4>Nenhum presente cadastrado</h4>
+                    <p>Adicione presentes à sua lista de casamento.</p>
                 </div>
-                <h3>Lista de Presentes</h3>
+                {% endif %}
             </div>
-            
-            {% if presentes %}
-            <div class="table-responsive">
-                <table class="admin-table">
+        </div>
+
+        <!-- Tab Convidados (Lista Completa) -->
+        <div id="tab-convidados" class="tab-content">
+            <div class="section-card">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Gerenciar Convidados</h3>
+                </div>
+                
+                <table id="tabela-convidados" class="admin-table">
                     <thead>
                         <tr>
-                            <th><i class="fas fa-gift"></i> Nome do Presente</th>
-                            <th><i class="fas fa-user-heart"></i> Reservado por</th>
-                            <th><i class="fas fa-calendar-check"></i> Data da Reserva</th>
-                            <th><i class="fas fa-external-link-alt"></i> Link</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for p in presentes %}
-                        <tr>
-                            <td><strong>{{ p.nome }}</strong></td>
-                            <td>
-                                {% if p.reservado_por %}
-                                    <span style="color: var(--admin-success); font-weight: bold;">
-                                        <i class="fas fa-heart"></i> {{ p.reservado_por }}
-                                    </span>
-                                {% else %}
-                                    <span style="color: #6c757d;">
-                                        <i class="fas fa-clock"></i> Disponível
-                                    </span>
-                                {% endif %}
-                            </td>
-                            <td>{{ p.reservado_em.strftime('%d/%m/%Y %H:%M') if p.reservado_em else '-' }}</td>
-                            <td>
-                                <a href="{{ p.link }}" target="_blank" class="link-btn">
-                                    <i class="fas fa-external-link-alt"></i> Ver na Amazon
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <div class="empty-state">
-                <i class="fas fa-gift"></i>
-                <h4>Nenhum presente cadastrado</h4>
-                <p>Adicione presentes à sua lista de casamento.</p>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-</div>
-
+                            <th>Nome</th>
+                            <th>WhatsApp</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Convite Enviado</th>
+                            <th>Última Visita</th>
+                            <th>Link</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -603,167 +727,127 @@ code {
             </div>
         </div>
 
-        <!-- Seção de Envio em Massa por WhatsApp -->
-        <div class="whatsapp-section">
-            <h3>Envio em Massa por WhatsApp</h3>
-            <div class="whatsapp-controls">
-                <div class="whatsapp-info">
-                    <p><i class="fas fa-info-circle"></i> 
-                       Gere links personalizados para envio em massa dos convites por WhatsApp apenas para convidados pendentes.
-                    </p>
+        <!-- Tab Adicionar Convidado -->
+        <div id="tab-adicionar-convidado" class="tab-content">
+            <div class="section-card" style="max-width: 800px; margin: 0 auto;">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                    <h3>Adicionar Novo Convidado</h3>
                 </div>
                 
-                <div class="whatsapp-actions">
-                    <button class="btn-whatsapp" onclick="gerarLinksWhatsApp()">
-                        <i class="fab fa-whatsapp"></i>
-                        Gerar Links WhatsApp (Pendentes)
-                    </button>
+                <form id="form-adicionar-convidado" class="form-admin">
+                    <div class="form-group">
+                        <label for="nome-convidado">
+                            <i class="fas fa-user"></i>
+                            Nome Completo do Convidado *
+                        </label>
+                        <input type="text" id="nome-convidado" name="nome" required 
+                               placeholder="Ex: Maria Silva">
+                    </div>
                     
-                    <button class="btn-whatsapp-all" onclick="enviarParaTodos()" style="display: none;">
-                        <i class="fab fa-whatsapp"></i>
-                        Enviar Para TODOS
-                    </button>
+                    <div class="form-group">
+                        <label for="email-convidado">
+                            <i class="fas fa-envelope"></i>
+                            E-mail (opcional)
+                        </label>
+                        <input type="email" id="email-convidado" name="email" 
+                               placeholder="maria.silva@email.com">
+                    </div>
                     
-                    <button class="btn-whatsapp-all" onclick="envioMassaAlternativo()" style="display: none; margin-left: 10px; background: linear-gradient(135deg, #28a745, #20c997);">
-                        <i class="fas fa-rocket"></i>
-                        ENVIO DIRETO (Alternativo)
-                    </button>
+                    <div class="form-group">
+                        <label for="telefone-convidado">
+                            <i class="fas fa-phone"></i>
+                            Telefone/WhatsApp (opcional)
+                        </label>
+                        <input type="tel" id="telefone-convidado" name="telefone" 
+                               placeholder="(11) 99999-9999">
+                    </div>
                     
-                    <button class="btn-whatsapp-all" onclick="marcarTodosEnviados()" style="display: none; margin-left: 10px;">
-                        <i class="fas fa-check-double"></i>
-                        Marcar Todos como Enviados
+                    <button type="submit" class="btn-adicionar">
+                        <i class="fas fa-user-plus"></i>
+                        Adicionar Convidado
                     </button>
-                    
-                    <!-- BOTÃO DE EMERGÊNCIA - SEMPRE VISÍVEL -->
-                    <button class="btn-emergencia" onclick="envioDeEmergencia()" style="margin-left: 10px; background: linear-gradient(135deg, #dc3545, #c82333); color: white; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        🚨 ENVIO EMERGÊNCIA 🚨
-                    </button>
-                </div>
-            </div>
-
-            <!-- Área de resultado dos links -->
-            <div id="links-whatsapp-container" style="display: none;">
-                <h4>Links Gerados para WhatsApp:</h4>
-                <div id="links-whatsapp-lista" class="links-lista">
-                    <!-- Links serão inseridos aqui via JavaScript -->
-                </div>
-            </div>
-        </div>
-        </div> <!-- Fim tab-dashboard -->
-
-    <!-- Tab Adicionar Convidado -->
-    <div id="tab-adicionar-convidado" class="tab-content">
-        <div class="section-card" style="max-width: 800px; margin: 0 auto;">
-            <div class="section-header">
-                <div class="section-icon">
-                    <i class="fas fa-user-plus"></i>
-                </div>
-                <h3>Adicionar Novo Convidado</h3>
-            </div>
-            
-            <form id="form-adicionar-convidado" class="form-admin">
-                <div class="form-group">
-                    <label for="nome-convidado">
-                        <i class="fas fa-user"></i>
-                        Nome Completo do Convidado *
-                    </label>
-                    <input type="text" id="nome-convidado" name="nome" required 
-                           placeholder="Ex: Maria Silva">
-                </div>
+                </form>
                 
-                <div class="form-group">
-                    <label for="email-convidado">
-                        <i class="fas fa-envelope"></i>
-                        E-mail (opcional)
-                    </label>
-                    <input type="email" id="email-convidado" name="email" 
-                           placeholder="maria.silva@email.com">
-                </div>
-                
-                <div class="form-group">
-                    <label for="telefone-convidado">
-                        <i class="fas fa-phone"></i>
-                        Telefone (opcional)
-                    </label>
-                    <input type="tel" id="telefone-convidado" name="telefone" 
-                           placeholder="(11) 99999-9999">
-                </div>
-                
-                <button type="submit" class="btn-adicionar">
-                    <i class="fas fa-user-plus"></i>
-                    Adicionar Convidado
-                </button>
-            </form>
-            
-            <!-- Resultado do convidado adicionado -->
-            <div id="resultado-convidado" style="display: none; margin-top: 2rem;">
-                <div class="alert alert-success">
-                    <h4><i class="fas fa-check-circle"></i> Convidado Adicionado!</h4>
-                    <div style="margin-top: 1rem;">
-                        <strong>Link do Convite:</strong><br>
-                        <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 0.5rem 0;">
-                            <code id="link-gerado" style="word-break: break-all;"></code>
-                        </div>
-                        <div style="display: flex; gap: 1rem; margin-top: 1rem;">
-                            <button type="button" class="btn-copiar" onclick="copiarLinkConvidado()">
-                                <i class="fas fa-copy"></i>
-                                Copiar Link
-                            </button>
-                            <button type="button" class="btn-whatsapp" onclick="compartilharWhatsApp()">
-                                <i class="fab fa-whatsapp"></i>
-                                Compartilhar WhatsApp
-                            </button>
+                <!-- Resultado do convidado adicionado -->
+                <div id="resultado-convidado" style="display: none; margin-top: 2rem;">
+                    <div class="alert alert-success">
+                        <h4><i class="fas fa-check-circle"></i> Convidado Adicionado!</h4>
+                        <div style="margin-top: 1rem;">
+                            <strong>Link do Convite:</strong><br>
+                            <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; margin: 0.5rem 0;">
+                                <code id="link-gerado" style="word-break: break-all;"></code>
+                            </div>
+                            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                                <button type="button" class="btn-copiar" onclick="copiarLinkConvidado()">
+                                    <i class="fas fa-copy"></i>
+                                    Copiar Link
+                                </button>
+                                <button type="button" class="btn-whatsapp" onclick="compartilharWhatsApp()">
+                                    <i class="fab fa-whatsapp"></i>
+                                    Compartilhar WhatsApp
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Tab Adicionar Presente -->
-    <div id="tab-adicionar" class="tab-content">
-        <h2>Adicionar Novo Presente</h2>
-        <form id="form-adicionar-presente" class="form-admin">
-            <div class="form-group">
-                <label for="nome-presente">Nome do Presente:</label>
-                <input type="text" id="nome-presente" name="nome" required>
+        <!-- Tab Adicionar Presente -->
+        <div id="tab-adicionar" class="tab-content">
+            <div class="section-card" style="max-width: 800px; margin: 0 auto;">
+                <div class="section-header">
+                    <div class="section-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <h3>Adicionar Novo Presente</h3>
+                </div>
+                
+                <form id="form-adicionar-presente" class="form-admin">
+                    <div class="form-group">
+                        <label for="nome-presente">Nome do Presente:</label>
+                        <input type="text" id="nome-presente" name="nome" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="descricao-presente">Descrição:</label>
+                        <textarea id="descricao-presente" name="descricao" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="preco-presente">Preço (R$):</label>
+                        <input type="number" id="preco-presente" name="preco" step="0.01" min="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="categoria-presente">Categoria:</label>
+                        <select id="categoria-presente" name="categoria" required>
+                            <option value="">Selecione uma categoria</option>
+                            <option value="Cozinha">Cozinha</option>
+                            <option value="Mesa e Bar">Mesa e Bar</option>
+                            <option value="Eletrodomésticos">Eletrodomésticos</option>
+                            <option value="Casa">Casa</option>
+                            <option value="Decoração">Decoração</option>
+                            <option value="Outros">Outros</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="link-presente">Link da Amazon:</label>
+                        <input type="url" id="link-presente" name="link_amazon" required 
+                               placeholder="https://amazon.com.br/dp/...">
+                    </div>
+                    
+                    <button type="submit" class="btn-adicionar">
+                        <i class="fas fa-plus"></i>
+                        Adicionar Presente
+                    </button>
+                </form>
             </div>
-            
-            <div class="form-group">
-                <label for="descricao-presente">Descrição:</label>
-                <textarea id="descricao-presente" name="descricao" rows="3"></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label for="preco-presente">Preço (R$):</label>
-                <input type="number" id="preco-presente" name="preco" step="0.01" min="0">
-            </div>
-            
-            <div class="form-group">
-                <label for="categoria-presente">Categoria:</label>
-                <select id="categoria-presente" name="categoria" required>
-                    <option value="">Selecione uma categoria</option>
-                    <option value="Cozinha">Cozinha</option>
-                    <option value="Mesa e Bar">Mesa e Bar</option>
-                    <option value="Eletrodomésticos">Eletrodomésticos</option>
-                    <option value="Casa">Casa</option>
-                    <option value="Decoração">Decoração</option>
-                    <option value="Outros">Outros</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="link-presente">Link da Amazon:</label>
-                <input type="url" id="link-presente" name="link_amazon" required 
-                       placeholder="https://amazon.com.br/dp/...">
-            </div>
-            
-            <button type="submit" class="btn-adicionar">
-                <i class="fas fa-plus"></i>
-                Adicionar Presente
-            </button>
-        </form>
+        </div>
     </div>
 </div>
 
@@ -799,6 +883,11 @@ function showTab(tabName) {
     
     // Adicionar classe active ao botão clicado
     event.target.classList.add('active');
+    
+    // Carregar convidados se necessário
+    if (tabName === 'convidados') {
+        carregarConvidados();
+    }
 }
 
 function mostrarTab(tabName) {
@@ -950,33 +1039,6 @@ document.getElementById('form-adicionar-presente').addEventListener('submit', as
     }
 });
 
-// Remover presente
-async function removerPresente(presenteId) {
-    if (confirm('Tem certeza que deseja remover este presente da lista?')) {
-        try {
-            const response = await fetch(`/api/remover-presente/${presenteId}`, {
-                method: 'DELETE'
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                document.getElementById('mensagem-modal').textContent = 'Presente removido da lista!';
-                document.getElementById('modal-confirmacao').style.display = 'block';
-                
-                // Recarregar página após 2 segundos
-                setTimeout(() => {
-                    location.reload();
-                }, 2000);
-            } else {
-                alert('Erro ao remover presente: ' + result.message);
-            }
-        } catch (error) {
-            alert('Erro ao remover presente. Tente novamente.');
-        }
-    }
-}
-
 function fecharModalConfirmacao() {
     document.getElementById('modal-confirmacao').style.display = 'none';
 }
@@ -991,7 +1053,7 @@ window.onclick = function(event) {
 
 // ===== GERENCIAMENTO DE CONVIDADOS =====
 
-// Carregar lista de convidados quando a aba for selecionada
+// Carregar lista de convidados
 function carregarConvidados() {
     fetch('/api/listar-convidados')
         .then(response => response.json())
@@ -1017,30 +1079,23 @@ function carregarConvidados() {
                                 }
                             </span>
                         </td>
-                        <td>${convidado.data_ultima_visita}</td>
+                        <td>${convidado.data_ultima_visita || 'Nunca'}</td>
                         <td>
                             <button class="btn-acao btn-copiar" onclick="copiarLink('${convidado.link_convite}')">
-                                <i class="fas fa-copy"></i> Copiar Link
+                                <i class="fas fa-copy"></i>
                             </button>
                         </td>
                         <td>
                             <div class="acoes-convidado">
                                 ${convidado.whatsapp ? 
-                                    `<button class="btn-acao btn-whatsapp-individual" onclick="enviarWhatsAppIndividual(${convidado.id})">
+                                    `<button class="btn-acao btn-whatsapp-individual" onclick="enviarWhatsAppIndividual(${convidado.id})" title="Enviar WhatsApp">
                                         <i class="fab fa-whatsapp"></i>
-                                        Enviar WhatsApp
                                     </button>` : ''
                                 }
-                                ${!convidado.convite_enviado && convidado.whatsapp ? 
-                                    `<button class="btn-acao btn-marcar-enviado" onclick="marcarConviteEnviado(${convidado.id})">
-                                        <i class="fas fa-check"></i>
-                                        Marcar Enviado
-                                    </button>` : ''
-                                }
-                                <a href="${convidado.link_convite}" target="_blank" class="btn-acao btn-ver">
+                                <a href="${convidado.link_convite}" target="_blank" class="btn-acao btn-ver" title="Ver convite">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <button class="btn-acao btn-excluir" onclick="excluirConvidado(${convidado.id}, '${convidado.nome}')">
+                                <button class="btn-acao btn-excluir" onclick="excluirConvidado(${convidado.id}, '${convidado.nome}')" title="Excluir">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
@@ -1050,8 +1105,8 @@ function carregarConvidados() {
             } else {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="8" class="empty-row">
-                            <i class="fas fa-users"></i><br>
+                        <td colspan="8" class="empty-row" style="text-align: center; padding: 2rem; color: #6c757d;">
+                            <i class="fas fa-users" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i><br>
                             Nenhum convidado cadastrado ainda
                         </td>
                     </tr>
@@ -1062,8 +1117,8 @@ function carregarConvidados() {
             console.error('Erro ao carregar convidados:', error);
             document.querySelector('#tabela-convidados tbody').innerHTML = `
                 <tr>
-                    <td colspan="8" class="error-row">
-                        <i class="fas fa-exclamation-triangle"></i><br>
+                    <td colspan="8" style="text-align: center; padding: 2rem; color: #dc3545;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i><br>
                         Erro ao carregar convidados
                     </td>
                 </tr>
@@ -1079,549 +1134,6 @@ function getStatusText(status) {
         'nao_comparecera': 'Não Comparecerá'
     };
     return statusMap[status] || status;
-}
-
-// Cadastrar novo convidado
-document.getElementById('form-cadastrar-convidado').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    const data = {
-        nome: formData.get('nome'),
-        whatsapp: formData.get('whatsapp'),
-        email: formData.get('email')
-    };
-    
-    try {
-        const response = await fetch('/api/cadastrar-convidado', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data)
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            alert(`Convidado cadastrado com sucesso!\\nCódigo: ${result.codigo}\\nLink: ${result.link}`);
-            this.reset();
-            carregarConvidados(); // Recarregar lista
-        } else {
-            alert('Erro ao cadastrar convidado: ' + result.message);
-        }
-    } catch (error) {
-        alert('Erro ao cadastrar convidado. Tente novamente.');
-    }
-});
-
-// Copiar link do convite
-function copiarLink(link) {
-    navigator.clipboard.writeText(link).then(() => {
-        alert('Link copiado para a área de transferência!');
-    }).catch(err => {
-        console.error('Erro ao copiar link:', err);
-        // Fallback para navegadores mais antigos
-        const textarea = document.createElement('textarea');
-        textarea.value = link;
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-        alert('Link copiado para a área de transferência!');
-    });
-}
-
-// ===== FUNÇÕES DO WHATSAPP =====
-
-// Gerar links do WhatsApp para envio em massa
-async function gerarLinksWhatsApp() {
-    try {
-        const response = await fetch('/api/gerar-links-whatsapp', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            const container = document.getElementById('links-whatsapp-container');
-            const lista = document.getElementById('links-whatsapp-lista');
-            
-            if (result.links.length > 0) {
-                lista.innerHTML = result.links.map(link => `
-                    <div class="link-whatsapp-item">
-                        <div class="link-info">
-                            <strong>${link.nome}</strong>
-                            <span class="whatsapp-number">${link.whatsapp}</span>
-                        </div>
-                        <div class="link-actions">
-                            <a href="${link.link_whatsapp}" target="_blank" class="btn-whatsapp-abrir">
-                                <i class="fab fa-whatsapp"></i>
-                                Abrir WhatsApp
-                            </a>
-                            <button class="btn-marcar-enviado" onclick="marcarConviteEnviado(${link.id})">
-                                <i class="fas fa-check"></i>
-                                Marcar como Enviado
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-                
-                container.style.display = 'block';
-                
-                // Armazenar IDs dos convidados para envio automático
-                window.convidadosPendentes = result.links.map(link => link.id);
-                
-                // Mostrar botões de ação
-                const botoesWhatsApp = document.querySelectorAll('.btn-whatsapp-all');
-                if (botoesWhatsApp.length > 0) {
-                    botoesWhatsApp[0].style.display = 'inline-block'; // Botão "Enviar Para TODOS"
-                    if (botoesWhatsApp.length > 1) {
-                        botoesWhatsApp[1].style.display = 'inline-block'; // Botão "ENVIO DIRETO (Alternativo)"
-                    }
-                    if (botoesWhatsApp.length > 2) {
-                        botoesWhatsApp[2].style.display = 'inline-block'; // Botão "Marcar Todos"
-                    }
-                }
-                
-                alert(`${result.total} links gerados com sucesso! Use "Enviar Para TODOS" para abrir todas as conversas simultaneamente.`);
-            } else {
-                alert('Nenhum link gerado. Verifique se há convidados com WhatsApp que ainda não receberam convites.');
-            }
-        } else {
-            alert('Erro ao gerar links: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Erro ao gerar links:', error);
-        alert('Erro ao gerar links. Tente novamente.');
-    }
-}
-
-// Marcar convite como enviado
-async function marcarConviteEnviado(convidadoId) {
-    try {
-        const response = await fetch('/api/marcar-convite-enviado', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                convidado_id: convidadoId
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            alert(result.message);
-            carregarConvidados(); // Recarregar lista
-            
-            // Remover o item da lista de links se existir
-            const linkItem = document.querySelector(`button[onclick="marcarConviteEnviado(${convidadoId})"]`).closest('.link-whatsapp-item');
-            if (linkItem) {
-                linkItem.remove();
-            }
-        } else {
-            alert('Erro: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Erro ao marcar convite:', error);
-        alert('Erro ao marcar convite. Tente novamente.');
-    }
-}
-
-// Enviar Para TODOS os convidados pendentes - VERSÃO SIMPLIFICADA E ROBUSTA
-async function enviarParaTodos() {
-    console.log('=== INICIANDO ENVIO PARA TODOS ===');
-    
-    if (!window.convidadosPendentes || window.convidadosPendentes.length === 0) {
-        alert('Nenhum convidado pendente encontrado. Gere os links primeiro.');
-        return;
-    }
-    
-    console.log('Convidados pendentes:', window.convidadosPendentes);
-    
-    if (!confirm(`Tem certeza que deseja enviar convites para ${window.convidadosPendentes.length} convidados SIMULTANEAMENTE? Isso abrirá todas as conversas do WhatsApp de uma vez e marcará automaticamente como enviados.`)) {
-        return;
-    }
-    
-    try {
-        // Método 1: Buscar os links diretamente da API
-        console.log('Buscando links da API...');
-        
-        const response = await fetch('/api/gerar-links-whatsapp', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        const result = await response.json();
-        
-        if (!result.success) {
-            alert('Erro ao buscar links: ' + result.message);
-            return;
-        }
-        
-        console.log('Links da API:', result.links);
-        
-        if (!result.links || result.links.length === 0) {
-            alert('Nenhum link encontrado na API.');
-            return;
-        }
-        
-        // Abrir todos os links com método direto
-        let contadorAbertos = 0;
-        const totalLinks = result.links.length;
-        
-        console.log(`Abrindo ${totalLinks} links...`);
-        
-        for (let i = 0; i < result.links.length; i++) {
-            const link = result.links[i];
-            console.log(`Abrindo link ${i + 1}/${totalLinks} para ${link.nome}: ${link.link_whatsapp}`);
-            
-            try {
-                // Abrir link com pequeno delay
-                setTimeout(() => {
-                    window.open(link.link_whatsapp, '_blank');
-                    contadorAbertos++;
-                    
-                    console.log(`Link aberto ${contadorAbertos}/${totalLinks}`);
-                    
-                    // Se todos foram abertos, marcar como enviados
-                    if (contadorAbertos === totalLinks) {
-                        console.log('Todos os links foram abertos! Marcando como enviados...');
-                        setTimeout(() => {
-                            marcarTodosComoEnviadosAutomatico(window.convidadosPendentes);
-                        }, 3000); // Aguarda 3 segundos
-                    }
-                }, i * 800); // Intervalo de 800ms entre cada abertura
-                
-            } catch (error) {
-                console.error(`Erro ao abrir link ${i + 1}:`, error);
-            }
-        }
-        
-        alert(`Iniciando abertura de ${totalLinks} conversas do WhatsApp... Aguarde a marcação automática.`);
-        
-    } catch (error) {
-        console.error('Erro geral ao enviar para todos:', error);
-        alert('Erro ao enviar convites. Verifique o console e tente novamente.');
-    }
-}
-
-// Função para marcar todos como enviados automaticamente - VERSÃO MELHORADA
-async function marcarTodosComoEnviadosAutomatico(idsConvidados) {
-    console.log('=== INICIANDO MARCAÇÃO AUTOMÁTICA ===');
-    console.log('IDs para marcar:', idsConvidados);
-    
-    try {
-        if (!idsConvidados || idsConvidados.length === 0) {
-            console.log('Nenhum ID de convidado fornecido');
-            return;
-        }
-        
-        const response = await fetch('/api/enviar-whatsapp-automatico', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                ids_convidados: idsConvidados
-            })
-        });
-        
-        const result = await response.json();
-        console.log('Resposta da API:', result);
-        
-        if (result.success) {
-            alert(`✅ SUCESSO! ${result.total_atualizados} convites foram marcados como enviados automaticamente!`);
-            carregarConvidados(); // Recarregar lista
-            
-            // Ocultar seção de links
-            document.getElementById('links-whatsapp-container').style.display = 'none';
-            const botoesWhatsApp = document.querySelectorAll('.btn-whatsapp-all');
-            botoesWhatsApp.forEach(btn => btn.style.display = 'none');
-            
-            console.log('Marcação automática concluída com sucesso!');
-        } else {
-            console.error('Erro na API:', result.message);
-            alert('Erro ao marcar convites automaticamente: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Erro ao marcar todos como enviados:', error);
-        alert('Erro ao marcar convites automaticamente. Use o botão "Marcar Todos como Enviados" manualmente.');
-    }
-}
-
-// ENVIO MASSA ALTERNATIVO - MÉTODO DIRETO E SIMPLES
-async function envioMassaAlternativo() {
-    console.log('=== ENVIO MASSA ALTERNATIVO INICIADO ===');
-    
-    if (!confirm('MÉTODO ALTERNATIVO: Deseja enviar convites diretamente da API para todos os convidados pendentes? Isso abrirá todas as conversas e marcará automaticamente como enviados.')) {
-        return;
-    }
-    
-    try {
-        // Buscar convidados pendentes diretamente da API
-        console.log('Buscando convidados pendentes...');
-        
-        const responseConvidados = await fetch('/api/listar-convidados', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        const resultConvidados = await responseConvidados.json();
-        
-        if (!resultConvidados.success) {
-            alert('Erro ao buscar convidados: ' + resultConvidados.message);
-            return;
-        }
-        
-        // Filtrar apenas os pendentes
-        const pendentes = resultConvidados.convidados.filter(c => c.status_resposta === 'pendente' && c.whatsapp);
-        
-        if (pendentes.length === 0) {
-            alert('Nenhum convidado pendente com WhatsApp encontrado.');
-            return;
-        }
-        
-        console.log(`Encontrados ${pendentes.length} convidados pendentes:`, pendentes);
-        
-        // Buscar links da API
-        const responseLinks = await fetch('/api/gerar-links-whatsapp', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        const resultLinks = await responseLinks.json();
-        
-        if (!resultLinks.success) {
-            alert('Erro ao gerar links: ' + resultLinks.message);
-            return;
-        }
-        
-        console.log(`Links gerados:`, resultLinks.links);
-        
-        // Abrir todos os links
-        const links = resultLinks.links;
-        let contador = 0;
-        
-        alert(`Abrindo ${links.length} conversas do WhatsApp...`);
-        
-        links.forEach((link, index) => {
-            setTimeout(() => {
-                console.log(`Abrindo ${index + 1}/${links.length}: ${link.nome}`);
-                window.open(link.link_whatsapp, '_blank');
-                contador++;
-                
-                // Quando todos abriram, marcar como enviados
-                if (contador === links.length) {
-                    setTimeout(() => {
-                        console.log('Todos abertos, marcando como enviados...');
-                        marcarAutomaticamentePorIds(links.map(l => l.id));
-                    }, 2000);
-                }
-            }, index * 1000); // 1 segundo entre cada abertura
-        });
-        
-    } catch (error) {
-        console.error('Erro no envio alternativo:', error);
-        alert('Erro no envio alternativo: ' + error.message);
-    }
-}
-
-// FUNÇÃO DE EMERGÊNCIA - ENVIO DIRETO SEM DEPENDÊNCIAS
-async function envioDeEmergencia() {
-    console.log('🚨 === MODO EMERGÊNCIA ATIVADO === 🚨');
-    
-    if (!confirm('🚨 MODO EMERGÊNCIA 🚨\n\nEste método irá:\n1. Buscar TODOS os convidados pendentes\n2. Gerar links automaticamente\n3. Abrir WhatsApp para cada um\n4. Marcar como enviado\n\nTudo isso SEM precisar de login ou interface!\n\nContinuar?')) {
-        return;
-    }
-    
-    try {
-        // Links diretos hardcoded para os 3 convidados conhecidos
-        const convidadosEmergencia = [
-            {
-                id: 12,
-                nome: 'ALESSANDRO DE ANDRADE JUNIOR',
-                whatsapp: '28999330320',
-                link: 'https://wa.me/5528999330320?text=Olá%20ALESSANDRO%20DE%20ANDRADE%20JUNIOR!%20%F0%9F%8E%89%0A%0ATemos%20uma%20surpresa%20especial%20para%20você!%20%F0%9F%92%8C%0A%0AClique%20no%20link%20abaixo%20para%20receber%20seu%20convite%20de%20casamento%20interativo:%0A%0Ahttp://localhost:5000/convite/12%0A%0ANão%20perca%20esta%20celebração%20única!%20%F0%9F%92%95'
-            },
-            {
-                id: 13,
-                nome: 'IARA',
-                whatsapp: '28998813966',
-                link: 'https://wa.me/5528998813966?text=Olá%20IARA!%20%F0%9F%8E%89%0A%0ATemos%20uma%20surpresa%20especial%20para%20você!%20%F0%9F%92%8C%0A%0AClique%20no%20link%20abaixo%20para%20receber%20seu%20convite%20de%20casamento%20interativo:%0A%0Ahttp://localhost:5000/convite/13%0A%0ANão%20perca%20esta%20celebração%20única!%20%F0%9F%92%95'
-            },
-            {
-                id: 14,
-                nome: 'SAMUCA',
-                whatsapp: '28999237016',
-                link: 'https://wa.me/5528999237016?text=Olá%20SAMUCA!%20%F0%9F%8E%89%0A%0ATemos%20uma%20surpresa%20especial%20para%20você!%20%F0%9F%92%8C%0A%0AClique%20no%20link%20abaixo%20para%20receber%20seu%20convite%20de%20casamento%20interativo:%0A%0Ahttp://localhost:5000/convite/14%0A%0ANão%20perca%20esta%20celebração%20única!%20%F0%9F%92%95'
-            }
-        ];
-        
-        console.log('Convidados de emergência carregados:', convidadosEmergencia);
-        
-        alert(`🚨 INICIANDO ENVIO EMERGÊNCIA!\n\nEnviando para ${convidadosEmergencia.length} convidados:\n- ${convidadosEmergencia.map(c => c.nome).join('\n- ')}\n\nAguarde as aberturas...`);
-        
-        // Abrir cada link com intervalo
-        convidadosEmergencia.forEach((convidado, index) => {
-            setTimeout(() => {
-                console.log(`🚨 Abrindo ${index + 1}/${convidadosEmergencia.length}: ${convidado.nome} (${convidado.whatsapp})`);
-                console.log(`Link: ${convidado.link}`);
-                
-                window.open(convidado.link, '_blank');
-                
-                // Quando terminar de abrir todos, marcar como enviados
-                if (index === convidadosEmergencia.length - 1) {
-                    setTimeout(() => {
-                        console.log('🚨 Todos os links abertos! Marcando como enviados...');
-                        marcarEmergenciaComoEnviados(convidadosEmergencia.map(c => c.id));
-                    }, 2000);
-                }
-            }, index * 1200); // 1.2 segundos entre cada abertura
-        });
-        
-    } catch (error) {
-        console.error('🚨 ERRO NO MODO EMERGÊNCIA:', error);
-        alert('🚨 ERRO NO MODO EMERGÊNCIA: ' + error.message);
-    }
-}
-
-// Marcar como enviados no modo emergência
-async function marcarEmergenciaComoEnviados(ids) {
-    try {
-        console.log('🚨 Marcando emergência como enviados para IDs:', ids);
-        
-        // Tentar marcar via API
-        const response = await fetch('/api/enviar-whatsapp-automatico', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                ids_convidados: ids
-            })
-        });
-        
-        if (response.ok) {
-            const result = await response.json();
-            if (result.success) {
-                alert(`🎉 EMERGÊNCIA CONCLUÍDA COM SUCESSO!\n\n${result.total_atualizados} convites marcados como enviados!`);
-                console.log('🚨 Emergência concluída com sucesso!');
-                return;
-            }
-        }
-        
-        // Se a API falhar, apenas mostrar sucesso
-        alert('🎉 EMERGÊNCIA CONCLUÍDA!\n\nTodos os WhatsApps foram abertos!\nMarque manualmente como enviados se necessário.');
-        console.log('🚨 Emergência concluída (sem marcação automática)');
-        
-    } catch (error) {
-        console.error('🚨 Erro ao marcar emergência:', error);
-        alert('🎉 EMERGÊNCIA CONCLUÍDA!\n\nTodos os WhatsApps foram abertos!\nMarque manualmente como enviados se necessário.');
-    }
-}
-
-// Marcar automaticamente por IDs
-async function marcarAutomaticamentePorIds(ids) {
-    try {
-        console.log('Marcando IDs:', ids);
-        
-        const response = await fetch('/api/enviar-whatsapp-automatico', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                ids_convidados: ids
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            alert(`🎉 SUCESSO TOTAL! ${result.total_atualizados} convites enviados e marcados automaticamente!`);
-            carregarConvidados();
-        } else {
-            alert('Erro ao marcar: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Erro ao marcar:', error);
-    }
-}
-
-// Enviar WhatsApp individual
-async function enviarWhatsAppIndividual(convidadoId) {
-    try {
-        const response = await fetch('/api/enviar-whatsapp-individual', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                convidado_id: convidadoId
-            })
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            // Abrir link do WhatsApp em nova aba
-            window.open(result.link_whatsapp, '_blank');
-            
-            // Perguntar se deseja marcar como enviado
-            if (confirm(`WhatsApp aberto para ${result.nome_convidado}. Deseja marcar este convite como enviado?`)) {
-                await marcarConviteEnviado(convidadoId);
-            }
-        } else {
-            alert('Erro: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Erro ao enviar WhatsApp individual:', error);
-        alert('Erro ao enviar WhatsApp. Tente novamente.');
-    }
-}
-
-// Marcar todos os convites como enviados
-async function marcarTodosEnviados() {
-    if (!confirm('Tem certeza que deseja marcar TODOS os convites como enviados?')) {
-        return;
-    }
-    
-    try {
-        const response = await fetch('/api/marcar-todos-enviados', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        
-        const result = await response.json();
-        
-        if (result.success) {
-            alert(result.message);
-            carregarConvidados(); // Recarregar lista
-            
-            // Ocultar seção de links
-            document.getElementById('links-whatsapp-container').style.display = 'none';
-            document.querySelector('.btn-whatsapp-all').style.display = 'none';
-        } else {
-            alert('Erro: ' + result.message);
-        }
-    } catch (error) {
-        console.error('Erro ao marcar todos:', error);
-        alert('Erro ao marcar convites. Tente novamente.');
-    }
 }
 
 // Excluir convidado
@@ -1644,12 +1156,6 @@ async function excluirConvidado(convidadoId, nomeConvidado) {
         if (result.success) {
             alert(result.message);
             carregarConvidados(); // Recarregar lista
-            
-            // Se a seção de links do WhatsApp estiver visível, regenerar
-            const linksContainer = document.getElementById('links-whatsapp-container');
-            if (linksContainer.style.display !== 'none') {
-                gerarLinksWhatsApp();
-            }
         } else {
             alert('Erro ao excluir: ' + result.message);
         }
@@ -1659,17 +1165,33 @@ async function excluirConvidado(convidadoId, nomeConvidado) {
     }
 }
 
-// Modificar a função mostrarTab para carregar convidados quando necessário
-const originalMostrarTab = mostrarTab;
-mostrarTab = function(tabName) {
-    originalMostrarTab(tabName);
-    
-    if (tabName === 'convidados') {
-        carregarConvidados();
+// Enviar WhatsApp individual (mantida para uso individual)
+async function enviarWhatsAppIndividual(convidadoId) {
+    try {
+        const response = await fetch('/api/enviar-whatsapp-individual', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                convidado_id: convidadoId
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Abrir link do WhatsApp em nova aba
+            window.open(result.link_whatsapp, '_blank');
+            alert(`WhatsApp aberto para ${result.nome_convidado}!`);
+        } else {
+            alert('Erro: ' + result.message);
+        }
+    } catch (error) {
+        console.error('Erro ao enviar WhatsApp individual:', error);
+        alert('Erro ao enviar WhatsApp. Tente novamente.');
     }
-};
+}
+
 </script>
 {% endblock %}
-/ *   F o r � a   u p d a t e   0 8 / 1 1 / 2 0 2 5   1 8 : 5 9 : 1 3   * / 
- 
- 
