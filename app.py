@@ -135,6 +135,13 @@ def convite_personalizado(link_convite):
         nome_convidado = convidado[0]
         email_convidado = convidado[1]
         
+        # Criar objeto convidado para o template
+        convidado_dados = {
+            'nome': nome_convidado,
+            'email': email_convidado,
+            'link_convite': link_convite
+        }
+        
         maps_api_key = os.getenv('GOOGLE_MAPS_API_KEY', '')
         latitude = -23.55052
         longitude = -46.633308
@@ -147,6 +154,7 @@ def convite_personalizado(link_convite):
                              longitude=longitude, 
                              nome_local=nome_local, 
                              endereco=endereco,
+                             convidado=convidado_dados,
                              nome_convidado=nome_convidado,
                              email_convidado=email_convidado,
                              link_convite=link_convite)
