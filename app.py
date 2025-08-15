@@ -68,6 +68,15 @@ def criar_tabelas():
            SELECT 'admin', 'casamento2024' 
            WHERE NOT EXISTS (SELECT 1 FROM admin WHERE usuario = 'admin');'''
     ]
+    
+    # Comandos de migração para adicionar colunas que podem não existir
+    migracoes = [
+        '''ALTER TABLE convidados ADD COLUMN IF NOT EXISTS link_convite VARCHAR(100) UNIQUE;''',
+        '''ALTER TABLE convidados ADD COLUMN IF NOT EXISTS convite_enviado BOOLEAN DEFAULT FALSE;''',
+        '''ALTER TABLE convidados ADD COLUMN IF NOT EXISTS enviado_em TIMESTAMP;''',
+        '''ALTER TABLE convidados ADD COLUMN IF NOT EXISTS criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP;'''
+    ]
+    
     try:
         conn = psycopg2.connect(
             host=DB_HOST,
@@ -77,8 +86,18 @@ def criar_tabelas():
             port=DB_PORT
         )
         cur = conn.cursor()
+        
+        # Executar criação de tabelas
         for comando in comandos:
             cur.execute(comando)
+        
+        # Executar migrações
+        for migracao in migracoes:
+            try:
+                cur.execute(migracao)
+            except Exception as e:
+                print(f"Migração já aplicada ou erro: {e}")
+        
         conn.commit()
         cur.close()
         conn.close()
