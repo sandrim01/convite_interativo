@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
 import os
 from dotenv import load_dotenv
 import psycopg2
@@ -42,7 +42,10 @@ def criar_tabelas():
             nome VARCHAR(100) NOT NULL,
             link VARCHAR(255) NOT NULL,
             reservado_por VARCHAR(100),
-            reservado_em TIMESTAMP
+            reservado_em TIMESTAMP,
+            descricao TEXT,
+            preco DECIMAL(10,2),
+            categoria VARCHAR(50) DEFAULT 'Outros'
         );''',
         '''CREATE TABLE IF NOT EXISTS admin (
             id SERIAL PRIMARY KEY,
@@ -152,12 +155,84 @@ def admin_login():
             flash('Senha inválida.', 'danger')
     return render_template('admin_login.html')
 
+# API para adicionar presente
+@app.route('/api/adicionar-presente', methods=['POST'])
+def api_adicionar_presente():
+    if 'admin' not in session:
+        return jsonify({'success': False, 'message': 'Não autorizado'}), 401
+    
+    data = request.get_json()
+    nome = data.get('nome')
+    descricao = data.get('descricao')
+    preco = data.get('preco')
+    categoria = data.get('categoria')
+    link_amazon = data.get('link_amazon')
+    
+    if not nome or not categoria or not link_amazon:
+        return jsonify({'success': False, 'message': 'Campos obrigatórios não preenchidos'})
+    
+    try:
+        conn = get_conn()
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO presentes (nome, descricao, preco, categoria, link) VALUES (%s, %s, %s, %s, %s)",
+            (nome, descricao, preco, categoria, link_amazon)
+        )
+        conn.commit()
+        cur.close()
+        conn.close()
+        return jsonify({'success': True, 'message': 'Presente adicionado com sucesso!'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Erro ao adicionar presente: {str(e)}'})
+
 # Painel admin
 @app.route('/painel')
 def admin_panel():
     if 'admin' not in session:
         return redirect(url_for('admin_login'))
-    return render_template('admin.html')
+    
+    # Buscar convidados e presentes
+    conn = get_conn()
+    cur = conn.cursor()
+    
+    # Buscar convidados
+    cur.execute("SELECT * FROM convidados ORDER BY criado_em DESC")
+    convidados = cur.fetchall()
+    
+    # Buscar presentes
+    cur.execute("SELECT * FROM presentes ORDER BY id")
+    presentes = cur.fetchall()
+    
+    cur.close()
+    conn.close()
+    
+    # Converter para dicionários
+    convidados_dict = []
+    for c in convidados:
+        convidados_dict.append({
+            'id': c[0],
+            'nome': c[1],
+            'email': c[2],
+            'telefone': c[3],
+            'confirmado': c[4],
+            'mensagem': c[5],
+            'criado_em': c[6]
+        })
+    
+    presentes_dict = []
+    for p in presentes:
+        presentes_dict.append({
+            'id': p[0],
+            'nome': p[1],
+            'link': p[2],
+            'reservado_por': p[3],
+            'reservado_em': p[4],
+            'descricao': p[5] if len(p) > 5 else '',
+            'preco': p[6] if len(p) > 6 else 0,
+            'categoria': p[7] if len(p) > 7 else 'Outros'
+        })
+    
+    return render_template('admin.html', convidados=convidados_dict, presentes=presentes_dict)
 
 # Logout admin
 @app.route('/logout')

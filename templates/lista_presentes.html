@@ -1,17 +1,374 @@
 {% extends "base.html" %}
 
-{% block title %}Lista de Presentes - Casamento Samuel & Iara{% endblock %}
+{% block title %}Lista de Presentes - Alessandro & [Nome da Noiva]{% endblock %}
+
+{% block head %}
+<style>
+:root {
+    --primary-color: #8B1538;
+    --secondary-color: #C85A6E;
+    --accent-color: #2C3E50;
+    --success-color: #28a745;
+    --light-bg: #f8f9fa;
+}
+
+body {
+    background: linear-gradient(135deg, var(--light-bg) 0%, #e9ecef 100%);
+    min-height: 100vh;
+}
+
+.lista-presentes-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.header-presentes {
+    text-align: center;
+    padding: 3rem 0;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    border-radius: 20px;
+    margin-bottom: 3rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.header-presentes::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="hearts" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse"><text x="10" y="15" text-anchor="middle" fill="rgba(255,255,255,0.1)" font-size="12">♥</text></pattern></defs><rect width="100" height="100" fill="url(%23hearts)"/></svg>');
+    opacity: 0.3;
+}
+
+.header-presentes > * {
+    position: relative;
+    z-index: 1;
+}
+
+.header-presentes h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: 3rem;
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.header-presentes .subtitulo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    margin: 0 0 1rem 0;
+    opacity: 0.9;
+}
+
+.header-presentes .descricao {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+    opacity: 0.9;
+}
+
+.filtros-presentes {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+}
+
+.filtro-btn {
+    background: white;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 0.8rem 1.5rem;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.filtro-btn:hover,
+.filtro-btn.active {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(139, 21, 56, 0.3);
+}
+
+.presentes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.presente-card {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.presente-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+}
+
+.presente-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.presente-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.presente-header h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--accent-color);
+    margin: 0 0 0.5rem 0;
+}
+
+.categoria-badge {
+    display: inline-block;
+    background: rgba(139, 21, 56, 0.1);
+    color: var(--primary-color);
+    padding: 0.3rem 0.8rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.presente-descricao {
+    color: #6c757d;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.presente-preco {
+    font-weight: 700;
+    color: var(--success-color);
+    font-size: 1.2rem;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.status-selecionado {
+    background: linear-gradient(135deg, var(--success-color) 0%, #20c997 100%);
+    color: white;
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.presente-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.presente-actions form {
+    margin: 0;
+}
+
+.presente-actions input[type="text"] {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-bottom: 0.8rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.presente-actions input[type="text"]:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(139, 21, 56, 0.1);
+}
+
+.btn-acao {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+}
+
+.btn-amazon {
+    background: linear-gradient(135deg, #ff9900 0%, #ff7b00 100%);
+    color: white;
+}
+
+.btn-amazon:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 153, 0, 0.4);
+}
+
+.btn-reservar {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+}
+
+.btn-reservar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(139, 21, 56, 0.4);
+}
+
+.footer-presentes {
+    text-align: center;
+    padding: 3rem;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.mensagem-agradecimento h3 {
+    font-family: 'Dancing Script', cursive;
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.mensagem-agradecimento p {
+    font-size: 1.1rem;
+    color: #6c757d;
+    line-height: 1.6;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+}
+
+.btn-voltar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, var(--accent-color) 0%, #34495e 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-voltar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(44, 62, 80, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6c757d;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    opacity: 0.5;
+}
+
+.empty-state h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .lista-presentes-container {
+        padding: 1rem;
+    }
+    
+    .header-presentes {
+        padding: 2rem 1rem;
+    }
+    
+    .header-presentes h1 {
+        font-size: 2rem;
+    }
+    
+    .presentes-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .filtros-presentes {
+        gap: 0.5rem;
+    }
+    
+    .filtro-btn {
+        padding: 0.6rem 1rem;
+        font-size: 0.8rem;
+    }
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="lista-presentes-container">
     <div class="header-presentes">
         <h1><i class="fas fa-gift"></i> Lista de Presentes</h1>
-        <p class="subtitulo">Samuel & Iara</p>
+        <p class="subtitulo">Alessandro & [Nome da Noiva]</p>
         <p class="descricao">
             Sua presença é o presente mais importante para nós! Mas se desejar nos presentear, 
             aqui estão algumas sugestões especiais que escolhemos com carinho.
         </p>
     </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        <i class="fas fa-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
     <div class="filtros-presentes">
         <button class="filtro-btn active" onclick="filtrarCategoria('todas')">Todas</button>
@@ -19,57 +376,57 @@
         <button class="filtro-btn" onclick="filtrarCategoria('Mesa e Bar')">Mesa e Bar</button>
         <button class="filtro-btn" onclick="filtrarCategoria('Eletrodomésticos')">Eletrodomésticos</button>
         <button class="filtro-btn" onclick="filtrarCategoria('Casa')">Casa</button>
+        <button class="filtro-btn" onclick="filtrarCategoria('Decoração')">Decoração</button>
     </div>
 
     <div class="presentes-grid">
-        {% for presente in presentes %}
-        <div class="presente-card" data-categoria="{{ presente.categoria }}" id="presente-{{ presente.id }}">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }}">{{ message }}</div>
-                        {% endfor %}
+        {% if presentes %}
+            {% for presente in presentes %}
+            <div class="presente-card" data-categoria="{{ presente.categoria or 'Outros' }}" id="presente-{{ presente.id }}">
+                <div class="presente-header">
+                    <h3>{{ presente.nome }}</h3>
+                    <div class="categoria-badge">{{ presente.categoria or 'Outros' }}</div>
+                    {% if presente.descricao %}
+                    <p class="presente-descricao">{{ presente.descricao }}</p>
                     {% endif %}
-                {% endwith %}
-                <div class="presentes-grid">
-                        {% for presente in presentes %}
-                        <div class="presente-card" id="presente-{{ presente.id }}">
-                                <div class="presente-header">
-                                        <h3>{{ presente.nome }}</h3>
-                                        {% if presente.reservado_por %}
-                                        <div class="status-selecionado">
-                                                <i class="fas fa-check-circle"></i>
-                                                Reservado por {{ presente.reservado_por }}
-                                        </div>
-                                        {% endif %}
-                                </div>
-                                <div class="presente-body">
-                                        <a href="{{ presente.link }}" target="_blank" class="btn-acao">Ver na Amazon</a>
-                                        {% if not presente.reservado_por %}
-                                        <form method="post" style="margin-top:10px;">
-                                                <input type="hidden" name="presente_id" value="{{ presente.id }}">
-                                                <input type="text" name="nome_reserva" placeholder="Seu nome" required style="margin-bottom:5px;">
-                                                <button type="submit" class="btn-acao">Reservar este presente</button>
-                                        </form>
-                                        {% endif %}
-                                </div>
-                        </div>
-                        {% endfor %}
-            
-            <div class="presente-footer">
-                {% if not presente.selecionado_por %}
-                <button class="btn-selecionar" onclick="selecionarPresente({{ presente.id }})">
-                    <i class="fas fa-heart"></i>
-                    Quero Presentear
-                </button>
+                    {% if presente.preco %}
+                    <div class="presente-preco">R$ {{ "%.2f"|format(presente.preco) }}</div>
+                    {% endif %}
+                </div>
+                
+                {% if presente.reservado_por %}
+                    <div class="status-selecionado">
+                        <i class="fas fa-check-circle"></i>
+                        Reservado por {{ presente.reservado_por }}
+                    </div>
+                {% else %}
+                    <div class="presente-actions">
+                        <form method="post">
+                            <input type="hidden" name="presente_id" value="{{ presente.id }}">
+                            <input type="text" name="nome_reserva" placeholder="Digite seu nome completo" required>
+                            <button type="submit" class="btn-acao btn-reservar">
+                                <i class="fas fa-heart"></i>
+                                Quero Presentear
+                            </button>
+                        </form>
+                    </div>
                 {% endif %}
-                <a href="{{ presente.link_amazon }}" target="_blank" class="btn-amazon">
-                    <i class="fab fa-amazon"></i>
-                    Ver na Amazon
-                </a>
+                
+                <div class="presente-actions" style="margin-top: 1rem;">
+                    <a href="{{ presente.link }}" target="_blank" class="btn-acao btn-amazon">
+                        <i class="fab fa-amazon"></i>
+                        Ver na Amazon
+                    </a>
+                </div>
             </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-gift"></i>
+                <h4>Nenhum presente cadastrado</h4>
+                <p>Os noivos ainda estão preparando a lista de presentes.</p>
+            </div>
+        {% endif %}
     </div>
 
     <div class="footer-presentes">
@@ -110,47 +467,6 @@ function filtrarCategoria(categoria) {
         } else {
             card.style.display = 'none';
         }
-    });
-}
-
-function selecionarPresente(presenteId) {
-    // Pedir o nome do convidado
-    const nomeConvidado = prompt('Por favor, digite seu nome para confirmar a seleção:');
-    
-    if (!nomeConvidado || nomeConvidado.trim() === '') {
-        alert('Nome é obrigatório para selecionar um presente.');
-        return;
-    }
-    
-    // Confirmar seleção
-    if (!confirm(`Confirma que ${nomeConvidado.trim()} deseja presentear este item?`)) {
-        return;
-    }
-    
-    // Fazer requisição para selecionar o presente
-    fetch('/selecionar_presente', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            presente_id: presenteId,
-            nome_convidado: nomeConvidado.trim()
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.message);
-            // Recarregar a página para mostrar as mudanças
-            location.reload();
-        } else {
-            alert('Erro: ' + data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Erro:', error);
-        alert('Erro ao selecionar presente. Tente novamente.');
     });
 }
 

@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Lista de Presentes - Casamento Samuel & Iara{% endblock %}
+
+{% block content %}
+<div class="lista-presentes-container">
+    <div class="header-presentes">
+        <h1><i class="fas fa-gift"></i> Lista de Presentes</h1>
+        <p class="subtitulo">Samuel & Iara</p>
+        <p class="descricao">
+            Sua presença é o presente mais importante para nós! Mas se desejar nos presentear, 
+            aqui estão algumas sugestões especiais que escolhemos com carinho.
+        </p>
+    </div>
+
+    <div class="filtros-presentes">
+        <button class="filtro-btn active" onclick="filtrarCategoria('todas')">Todas</button>
+        <button class="filtro-btn" onclick="filtrarCategoria('Cozinha')">Cozinha</button>
+        <button class="filtro-btn" onclick="filtrarCategoria('Mesa e Bar')">Mesa e Bar</button>
+        <button class="filtro-btn" onclick="filtrarCategoria('Eletrodomésticos')">Eletrodomésticos</button>
+        <button class="filtro-btn" onclick="filtrarCategoria('Casa')">Casa</button>
+    </div>
+
+    <div class="presentes-grid">
+        {% for presente in presentes %}
+        <div class="presente-card" data-categoria="{{ presente.categoria }}" id="presente-{{ presente.id }}">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                <div class="presentes-grid">
+                        {% for presente in presentes %}
+                        <div class="presente-card" id="presente-{{ presente.id }}">
+                                <div class="presente-header">
+                                        <h3>{{ presente.nome }}</h3>
+                                        {% if presente.reservado_por %}
+                                        <div class="status-selecionado">
+                                                <i class="fas fa-check-circle"></i>
+                                                Reservado por {{ presente.reservado_por }}
+                                        </div>
+                                        {% endif %}
+                                </div>
+                                <div class="presente-body">
+                                        <a href="{{ presente.link }}" target="_blank" class="btn-acao">Ver na Amazon</a>
+                                        {% if not presente.reservado_por %}
+                                        <form method="post" style="margin-top:10px;">
+                                                <input type="hidden" name="presente_id" value="{{ presente.id }}">
+                                                <input type="text" name="nome_reserva" placeholder="Seu nome" required style="margin-bottom:5px;">
+                                                <button type="submit" class="btn-acao">Reservar este presente</button>
+                                        </form>
+                                        {% endif %}
+                                </div>
+                        </div>
+                        {% endfor %}
+            
+            <div class="presente-footer">
+                {% if not presente.selecionado_por %}
+                <button class="btn-selecionar" onclick="selecionarPresente({{ presente.id }})">
+                    <i class="fas fa-heart"></i>
+                    Quero Presentear
+                </button>
+                {% endif %}
+                <a href="{{ presente.link_amazon }}" target="_blank" class="btn-amazon">
+                    <i class="fab fa-amazon"></i>
+                    Ver na Amazon
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="footer-presentes">
+        <div class="mensagem-agradecimento">
+            <h3>💕 Obrigado!</h3>
+            <p>
+                Lembramos que sua presença em nosso casamento é o que realmente importa. 
+                Os presentes são apenas uma forma carinhosa de começarmos nossa nova vida juntos.
+            </p>
+        </div>
+        
+        <div class="acoes-footer">
+            <a href="{{ url_for('convite') }}" class="btn-voltar">
+                <i class="fas fa-arrow-left"></i>
+                Voltar ao Convite
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function filtrarCategoria(categoria) {
+    const cards = document.querySelectorAll('.presente-card');
+    const botoes = document.querySelectorAll('.filtro-btn');
+    
+    // Remover classe active de todos os botões
+    botoes.forEach(btn => btn.classList.remove('active'));
+    
+    // Adicionar classe active ao botão clicado
+    event.target.classList.add('active');
+    
+    // Filtrar cards
+    cards.forEach(card => {
+        if (categoria === 'todas' || card.dataset.categoria === categoria) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+function selecionarPresente(presenteId) {
+    // Pedir o nome do convidado
+    const nomeConvidado = prompt('Por favor, digite seu nome para confirmar a seleção:');
+    
+    if (!nomeConvidado || nomeConvidado.trim() === '') {
+        alert('Nome é obrigatório para selecionar um presente.');
+        return;
+    }
+    
+    // Confirmar seleção
+    if (!confirm(`Confirma que ${nomeConvidado.trim()} deseja presentear este item?`)) {
+        return;
+    }
+    
+    // Fazer requisição para selecionar o presente
+    fetch('/selecionar_presente', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            presente_id: presenteId,
+            nome_convidado: nomeConvidado.trim()
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            // Recarregar a página para mostrar as mudanças
+            location.reload();
+        } else {
+            alert('Erro: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro ao selecionar presente. Tente novamente.');
+    });
+}
+
+// Animação suave ao carregar
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.presente-card');
+    cards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+</script>
+{% endblock %}
