@@ -48,7 +48,10 @@ def criar_tabelas():
             id SERIAL PRIMARY KEY,
             usuario VARCHAR(50) NOT NULL,
             senha VARCHAR(255) NOT NULL
-        );'''
+        );''',
+        '''INSERT INTO admin (usuario, senha) 
+           SELECT 'admin', 'casamento2024' 
+           WHERE NOT EXISTS (SELECT 1 FROM admin WHERE usuario = 'admin');'''
     ]
     try:
         conn = psycopg2.connect(
@@ -140,22 +143,13 @@ def presentes():
 @app.route('/admin', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
-        usuario = request.form.get('usuario')
         senha = request.form.get('senha')
-        try:
-            conn = get_conn()
-            cur = conn.cursor()
-            cur.execute('SELECT senha FROM admin WHERE usuario = %s', (usuario,))
-            row = cur.fetchone()
-            cur.close()
-            conn.close()
-            if row and senha == row[0]:
-                session['admin'] = usuario
-                return redirect(url_for('admin_panel'))
-            else:
-                flash('Usuário ou senha inválidos.', 'danger')
-        except Exception as e:
-            flash('Erro ao acessar admin: ' + str(e), 'danger')
+        # Usar senha simples sem usuário para facilitar acesso
+        if senha == 'casamento2024':
+            session['admin'] = 'admin'
+            return redirect(url_for('admin_panel'))
+        else:
+            flash('Senha inválida.', 'danger')
     return render_template('admin_login.html')
 
 # Painel admin
