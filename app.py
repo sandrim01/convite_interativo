@@ -123,7 +123,7 @@ def convite_personalizado(link_convite):
     try:
         conn = get_conn()
         cur = conn.cursor()
-        cur.execute("SELECT nome, email FROM convidados WHERE link_convite = %s", (link_convite,))
+        cur.execute("SELECT id, nome, email, telefone FROM convidados WHERE link_convite = %s", (link_convite,))
         convidado = cur.fetchone()
         cur.close()
         conn.close()
@@ -132,14 +132,19 @@ def convite_personalizado(link_convite):
             # Se não encontrar o link, redireciona para convite geral
             return redirect(url_for('convite'))
         
-        nome_convidado = convidado[0]
-        email_convidado = convidado[1]
+        convidado_id = convidado[0]
+        nome_convidado = convidado[1]
+        email_convidado = convidado[2]
+        telefone_convidado = convidado[3]
         
-        # Criar objeto convidado para o template
+        # Criar objeto convidado completo para o template
         convidado_dados = {
+            'id': convidado_id,
             'nome': nome_convidado,
             'email': email_convidado,
-            'link_convite': link_convite
+            'whatsapp': telefone_convidado,
+            'codigo_convite': link_convite,
+            'status_resposta': 'pendente'  # Status padrão
         }
         
         maps_api_key = os.getenv('GOOGLE_MAPS_API_KEY', '')
@@ -157,6 +162,7 @@ def convite_personalizado(link_convite):
                              convidado=convidado_dados,
                              nome_convidado=nome_convidado,
                              email_convidado=email_convidado,
+                             telefone_convidado=telefone_convidado,
                              link_convite=link_convite)
     except Exception as e:
         print(f"Erro ao carregar convite personalizado: {e}")
