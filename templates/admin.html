@@ -19,235 +19,54 @@
                     <i class="fas fa-sign-out-alt"></i>
                     Sair
                 </a>
-            </div>
-        </div>
-    </div>
-
-    <div class="admin-tabs">
-        <button class="tab-btn active" onclick="mostrarTab('presentes')">
-            <i class="fas fa-gift"></i> Presentes
-        </button>
-        <button class="tab-btn" onclick="mostrarTab('selecionados')">
-            <i class="fas fa-heart"></i> Presentes Selecionados
-        </button>
-        <button class="tab-btn" onclick="mostrarTab('confirmacoes')">
-            <i class="fas fa-users"></i> Confirmações
-        </button>
-        <button class="tab-btn" onclick="mostrarTab('convidados')">
-            <i class="fas fa-address-book"></i> Convidados
-        </button>
-        <button class="tab-btn" onclick="mostrarTab('adicionar')">
-            <i class="fas fa-plus"></i> Adicionar Presente
-        </button>
-    </div>
-
-    <!-- Tab Presentes -->
-    <div id="tab-presentes" class="tab-content active">
-        <h2>Lista de Presentes</h2>
-        <div class="table-container">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Categoria</th>
-                        <th>Preço</th>
-                        <th>Status</th>
-                        <th>Selecionado por</th>
-                        <th>Data Seleção</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for presente in presentes %}
-                    <tr>
-                        <td>{{ presente.nome }}</td>
-                        <td>{{ presente.categoria }}</td>
-                        <td>R$ {{ "%.2f"|format(presente.preco) if presente.preco else 'N/A' }}</td>
-                        <td>
-                            {% if presente.selecionado_por %}
-                            <span class="status selecionado">
-                                <i class="fas fa-heart"></i> Escolhido
-                            </span>
-                            {% else %}
-                            <span class="status {{ 'disponivel' if presente.disponivel else 'indisponivel' }}">
-                                {{ 'Disponível' if presente.disponivel else 'Indisponível' }}
-                            </span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if presente.selecionado_por %}
-                            <strong class="nome-convidado">{{ presente.selecionado_por }}</strong>
-                            {% else %}
-                            <span class="text-muted">-</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if presente.data_selecao %}
-                            {{ presente.data_selecao.strftime('%d/%m/%Y às %H:%M') }}
-                            {% else %}
-                            <span class="text-muted">-</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <a href="{{ presente.link_amazon }}" target="_blank" class="btn-acao btn-ver">
-                                <i class="fas fa-external-link-alt"></i>
-                            </a>
-                            {% if presente.disponivel and not presente.selecionado_por %}
-                            <button class="btn-acao btn-remover" onclick="removerPresente({{ presente.id }})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Tab Presentes Selecionados -->
-    <div id="tab-selecionados" class="tab-content">
-        <h2>Presentes Selecionados pelos Convidados</h2>
-        {% if presentes_selecionados %}
-        <div class="estatisticas-selecionados">
-            <div class="stat-card">
-                <i class="fas fa-heart"></i>
-                <div class="stat-info">
-                    <h3>{{ presentes_selecionados|length }}</h3>
-                    <p>Presentes Escolhidos</p>
-                </div>
-            </div>
-            <div class="stat-card">
-                <i class="fas fa-gift"></i>
-                <div class="stat-info">
-                    <h3>{{ presentes|length - presentes_selecionados|length }}</h3>
-                    <p>Ainda Disponíveis</p>
-                </div>
-            </div>
-        </div>
-        <div class="table-container">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Presente</th>
-                        <th>Categoria</th>
-                        <th>Preço</th>
-                        <th>Escolhido por</th>
-                        <th>Data da Escolha</th>
-                        <th>Link Amazon</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for presente in presentes_selecionados %}
-                    <tr>
-                        <td><strong>{{ presente.nome }}</strong></td>
-                        <td>{{ presente.categoria }}</td>
-                        <td>R$ {{ "%.2f"|format(presente.preco) if presente.preco else 'N/A' }}</td>
-                        <td>
-                            <span class="nome-convidado">{{ presente.selecionado_por }}</span>
-                        </td>
-                        <td>{{ presente.data_selecao.strftime('%d/%m/%Y às %H:%M') }}</td>
-                        <td>
-                            <a href="{{ presente.link_amazon }}" target="_blank" class="btn-acao btn-ver">
-                                <i class="fas fa-external-link-alt"></i> Ver
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <div class="empty-state">
-            <i class="fas fa-heart-broken"></i>
-            <h3>Nenhum presente foi selecionado ainda</h3>
-            <p>Quando os convidados começarem a escolher presentes, eles aparecerão aqui.</p>
-        </div>
-        {% endif %}
-    </div>
-
-    <!-- Tab Confirmações -->
-    <div id="tab-confirmacoes" class="tab-content">
-        <h2>Confirmações de Presença</h2>
-        <div class="table-container">
-            <table class="admin-table">
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>E-mail</th>
-                        <th>Telefone</th>
-                        <th>Presença</th>
-                        <th>Acompanhantes</th>
-                        <th>Data</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for confirmacao in confirmacoes %}
-                    <tr>
-                        <td>{{ confirmacao.nome_convidado }}</td>
-                        <td>{{ confirmacao.email or 'N/A' }}</td>
-                        <td>{{ confirmacao.telefone or 'N/A' }}</td>
-                        <td>
-                            <span class="status {{ 'confirmado' if confirmacao.confirmou_presenca else 'nao-confirmado' }}">
-                                {{ 'Confirmado' if confirmacao.confirmou_presenca else 'Não Confirmado' }}
-                            </span>
-                        </td>
-                        <td>{{ confirmacao.numero_acompanhantes }}</td>
-                        <td>{{ confirmacao.data_confirmacao.strftime('%d/%m/%Y') }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Tab Convidados -->
-    <div id="tab-convidados" class="tab-content">
-        <h2>Gerenciar Convidados</h2>
-        
-        <!-- Formulário para cadastrar novo convidado -->
-        <div class="form-section">
-            <h3>Cadastrar Novo Convidado</h3>
-            <form id="form-cadastrar-convidado" class="form-admin">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="nome-convidado">Nome Completo:</label>
-                        <input type="text" id="nome-convidado" name="nome" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="whatsapp-convidado">WhatsApp:</label>
-                        <input type="tel" id="whatsapp-convidado" name="whatsapp" 
-                               placeholder="11999999999">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="email-convidado">E-mail (opcional):</label>
-                        <input type="email" id="email-convidado" name="email">
-                    </div>
-                </div>
-                
-                <button type="submit" class="btn-adicionar">
-                    <i class="fas fa-user-plus"></i>
-                    Cadastrar Convidado
-                </button>
-            </form>
-        </div>
-
-        <!-- Lista de convidados -->
-        <div class="convidados-section">
-            <h3>Lista de Convidados</h3>
-            <div class="table-container">
-                <table class="admin-table" id="tabela-convidados">
+            <section class="admin-panel">
+                <h2>Painel do Administrador</h2>
+                <a href="{{ url_for('admin_logout') }}" class="btn-acao" style="float:right;">Sair</a>
+                <h3>Convidados Confirmados</h3>
+                <table class="admin-table">
                     <thead>
                         <tr>
                             <th>Nome</th>
-                            <th>WhatsApp</th>
-                            <th>E-mail</th>
-                            <th>Status</th>
-                            <th>Envio Convite</th>
-                            <th>Última Visita</th>
-                            <th>Link do Convite</th>
+                            <th>Email</th>
+                            <th>Telefone</th>
+                            <th>Mensagem</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for c in convidados %}
+                        <tr>
+                            <td>{{ c.nome }}</td>
+                            <td>{{ c.email }}</td>
+                            <td>{{ c.telefone }}</td>
+                            <td>{{ c.mensagem }}</td>
+                            <td>{{ c.criado_em.strftime('%d/%m/%Y %H:%M') if c.criado_em else '' }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <h3>Presentes Reservados</h3>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Nome do Presente</th>
+                            <th>Reservado por</th>
+                            <th>Data da Reserva</th>
+                            <th>Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in presentes %}
+                        <tr>
+                            <td>{{ p.nome }}</td>
+                            <td>{{ p.reservado_por or '-' }}</td>
+                            <td>{{ p.reservado_em.strftime('%d/%m/%Y %H:%M') if p.reservado_em else '-' }}</td>
+                            <td><a href="{{ p.link }}" target="_blank">Ver</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -1152,5 +971,6 @@ mostrarTab = function(tabName) {
 };
 </script>
 {% endblock %}
-/ *   F o r � a   u p d a t e   0 8 / 1 1 / 2 0 2 5   1 8 : 5 9 : 1 3   * /  
+/ *   F o r � a   u p d a t e   0 8 / 1 1 / 2 0 2 5   1 8 : 5 9 : 1 3   * / 
+ 
  

@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Confirmação de Presença{% endblock %}
+{% block content %}
+<section class="rsvp">
+        <h2>Confirme sua presença</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="post">
+                <input type="text" name="nome" placeholder="Seu nome" required>
+                <input type="email" name="email" placeholder="Seu e-mail">
+                <input type="tel" name="telefone" placeholder="Telefone">
+                <textarea name="mensagem" placeholder="Deixe uma mensagem"></textarea>
+                <button type="submit">Confirmar</button>
+        </form>
+</section>
+{% endblock %}

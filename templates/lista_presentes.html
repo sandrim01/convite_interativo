@@ -24,23 +24,37 @@
     <div class="presentes-grid">
         {% for presente in presentes %}
         <div class="presente-card" data-categoria="{{ presente.categoria }}" id="presente-{{ presente.id }}">
-            <div class="presente-header">
-                <h3>{{ presente.nome }}</h3>
-                <span class="categoria-tag">{{ presente.categoria }}</span>
-                {% if presente.selecionado_por %}
-                <div class="status-selecionado">
-                    <i class="fas fa-check-circle"></i>
-                    Escolhido por {{ presente.selecionado_por }}
-                </div>
-                {% endif %}
-            </div>
-            
-            <div class="presente-body">
-                <p class="descricao">{{ presente.descricao }}</p>
-                {% if presente.preco %}
-                <p class="preco">R$ {{ "%.2f"|format(presente.preco) }}</p>
-                {% endif %}
-            </div>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                <div class="presentes-grid">
+                        {% for presente in presentes %}
+                        <div class="presente-card" id="presente-{{ presente.id }}">
+                                <div class="presente-header">
+                                        <h3>{{ presente.nome }}</h3>
+                                        {% if presente.reservado_por %}
+                                        <div class="status-selecionado">
+                                                <i class="fas fa-check-circle"></i>
+                                                Reservado por {{ presente.reservado_por }}
+                                        </div>
+                                        {% endif %}
+                                </div>
+                                <div class="presente-body">
+                                        <a href="{{ presente.link }}" target="_blank" class="btn-acao">Ver na Amazon</a>
+                                        {% if not presente.reservado_por %}
+                                        <form method="post" style="margin-top:10px;">
+                                                <input type="hidden" name="presente_id" value="{{ presente.id }}">
+                                                <input type="text" name="nome_reserva" placeholder="Seu nome" required style="margin-bottom:5px;">
+                                                <button type="submit" class="btn-acao">Reservar este presente</button>
+                                        </form>
+                                        {% endif %}
+                                </div>
+                        </div>
+                        {% endfor %}
             
             <div class="presente-footer">
                 {% if not presente.selecionado_por %}
